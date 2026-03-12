@@ -35,7 +35,7 @@ built because we were tired of losing money to rugs, snipers, and fake charts �
 ## the stack
 
 ```
-frontend    React/Vite — radar, bags, intel dashboard, deploy wizard
+frontend    React/Vite — radar, wallet, intel dashboard, deploy wizard
 backend     Node.js/Express — PumpPortal WS, scoring engine, auto-trader
 chain       Solana mainnet — Helius RPC, PumpPortal Lightning trades
 memory      Redis — sessions, learned weights, chart patterns, artwork hashes
