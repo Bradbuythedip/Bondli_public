@@ -86,7 +86,7 @@ Bondli's GPU Earnings layer lets any user with a compatible NVIDIA GPU earn $NOS
 | A100 | 80 GB | 0.000115 | ~9.9 | Data Center |
 | H100 | 80 GB | 0.000150 | ~13.0 | Data Center |
 
-> **Note:** Laptop GPUs are automatically mapped to the nearest desktop tier. Daily estimates assume 24h uptime with full job utilization.
+> **Note:** Daily estimates assume 24h uptime with full job utilization. Laptop GPUs are not currently supported.
 
 ---
 
@@ -94,7 +94,7 @@ Bondli's GPU Earnings layer lets any user with a compatible NVIDIA GPU earn $NOS
 
 ### Prerequisites
 
-- **NVIDIA GPU** (see supported list above)
+- **Desktop NVIDIA GPU** (see supported list above)
 - **Linux** (Ubuntu 20.04+ recommended) or WSL2 on Windows
 - **NVIDIA drivers** installed (`nvidia-smi` must work)
 - **Solana wallet** address to receive earnings
