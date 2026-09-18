@@ -14,7 +14,7 @@
 The trading engine behind [bondli.fun](https://bondli.fun): the feeds, the gates, the sizing, the
 exits, the routers for three chains, the verified-callout ledger, and the tests that hold every claim
 on this page. It is the repository referenced by our
-[Arc ecosystem grant application](docs/GRANT-ARC-APPLICATION.md).
+[Arc ecosystem grant submission](docs/GRANT-ARC.md).
 
 The public mirror is [Bondli_public](https://github.com/Bradbuythedip/Bondli_public); what it leaves
 out, and why, is in [docs/PUBLIC_MIRROR.md](docs/PUBLIC_MIRROR.md).
@@ -185,7 +185,6 @@ and [docs/QUICKSTART.md](docs/QUICKSTART.md).
 | [docs/AXIOMS.md](docs/AXIOMS.md) | what the customer is owed, where each rule is held, and what is still open |
 | [docs/ARC_INTEGRATION.md](docs/ARC_INTEGRATION.md) | Arc and Argus: USDC's two faces, the feed, the router, what is and is not pinned |
 | [docs/GRANT-ARC.md](docs/GRANT-ARC.md) | the Arc grant submission: what exists, the deliverables, the review record |
-| [docs/GRANT-ARC-APPLICATION.md](docs/GRANT-ARC-APPLICATION.md) | the application, field by field |
 | [docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md) | the stack, end to end |
 | [docs/BONDING_CURVE.md](docs/BONDING_CURVE.md) | pump.fun bonding-curve mechanics |
 | [docs/BONDLI_API.md](docs/BONDLI_API.md) | the HTTP API |

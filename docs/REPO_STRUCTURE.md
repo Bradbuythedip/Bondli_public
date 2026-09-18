@@ -23,8 +23,7 @@ The tree, annotated. Generated against the published file list; the counts are r
 │   ├── QUICKSTART.md             setup, environment, scripts
 │   ├── REPO_STRUCTURE.md         this file
 │   ├── PUBLIC_MIRROR.md          what the public mirror leaves out, and why
-│   ├── GRANT-ARC.md              the Arc grant submission
-│   ├── GRANT-ARC-APPLICATION.md  the application, field by field
+│   ├── GRANT-ARC.md              the Arc grant submission: what exists, and the test behind each claim
 │   ├── LORE.md                   the story the site tells, checked against the code
 │   └── TWEETS.md                 launch thread drafts, with every number left as a placeholder
 │
@@ -105,10 +104,8 @@ The tree, annotated. Generated against the published file list; the counts are r
 │   │
 │   ├── scoring/memetic/          (21)  linguistic, absurdity, cultural timing, influencer,
 │   │                                   community, visual, temporal + background workers and data
-│   ├── middleware/               (6)   wallet-auth (requireOwner), keyvault (AES-256-GCM), rate
-│   │                                   limiting, validation, security headers
-│   ├── db/                       (2)   user and session stores
-│   └── payments/                 (2)   payment verification
+│   └── middleware/               (2)   wallet-auth (requireOwner) and keyvault (AES-256-GCM):
+│                                       the two things standing between a request and a custodial key
 │
 ├── app/                          the React + Vite frontend
 │   ├── src/Simple.jsx            the whole interface
@@ -116,15 +113,16 @@ The tree, annotated. Generated against the published file list; the counts are r
 │   ├── public/                   icons, the frog, the manifest
 │   └── vite.config.js · vercel.json
 │
-├── tests/                        (39 files)
+├── tests/                        (42 files)
 │   ├── velocity/                 (19 + 2 helpers)  T1–T27: feed, replay, risk, slippage, exits,
 │   │                             ledger crash, governor, learner, reconcile, live path, hub,
 │   │                             PONS chain and sell, holder waiver, Arc chain/feed/router, callouts
 │   ├── api/                      (13)  route guards, custody durability, funding gate, image paint,
 │   │                             launch banner, wallet-intel wiring, Arc + callouts wiring, wave
 │   │                             wiring, viral surfaces, activity gate, Arc grant surfaces
-│   └── radar/                    (7)   copycat, launch, mayhem, onchain, revival, slowcook,
-│                                 wallet intelligence
+│   ├── radar/                    (7)   copycat, launch, mayhem, onchain, revival, slowcook,
+│   │                             wallet intelligence
+│   └── helpers/                  (1)   the offline guard: proves the suite calls nothing outside
 │
 ├── tools/                        (5)
 │   ├── tx-audit.mjs              reconcile the ledger against the chain, one signature at a time

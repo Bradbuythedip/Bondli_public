@@ -21,8 +21,9 @@ import { HolderWaiver } from "./core/holder-waiver.mjs";
 import { Ledger } from "./core/ledger.mjs";
 import { Callouts } from "./core/callouts.mjs";
 
-/** The original platform wallet. Its key was pasted into a chat once; the operator chose to keep it,
- *  so it is accepted with a loud warning at boot rather than refused. Sweep it often. */
+/** The platform wallet this project shipped with before fees were configurable. It must be replaced:
+ *  it is not a wallet whose key can be trusted any more. Setting PLATFORM_WALLET to it still works,
+ *  so an operator is never silently cut off from their own fees, but the boot warns every time. */
 export const EXPOSED_DEFAULT_PLATFORM_WALLET = "4XnHZZmHwSQ8RszJsdc7snvxG8dZtm6g4hvpkCMkguMx";
 /** Each venue's quote asset, as the ledger and the operator name it. */
 export const QUOTE_OF = Object.freeze({ pumpfun: "SOL", pons: "ETH", arc: "USDC" });
@@ -191,7 +192,7 @@ export class VelocityHub {
     else if (this.waiver.configuredButInvalid) log.error?.(`[VELOCITY-HUB] BNDLI_MINT is not a Solana address; the holder fee waiver is OFF`);
     this.feeOk = !!this.platformWallet;
     if (!this.feeOk) log.error?.(`[VELOCITY-HUB] PLATFORM_WALLET is unset: SOL performance fees will NOT be collected`);
-    else if (this.platformWallet === EXPOSED_DEFAULT_PLATFORM_WALLET) log.warn?.(`[VELOCITY-HUB] PLATFORM_WALLET is the original wallet whose key was once exposed in a chat: fees go there by the operator's choice; sweep it often`);
+    else if (this.platformWallet === EXPOSED_DEFAULT_PLATFORM_WALLET) log.warn?.(`[VELOCITY-HUB] PLATFORM_WALLET is the shipped default, which must be replaced with a wallet you created: fees are being collected there by your own configuration`);
   }
 
   has(wallet) { return this.users.has(wallet); }

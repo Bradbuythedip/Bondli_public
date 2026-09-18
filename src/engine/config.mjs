@@ -22,9 +22,9 @@ export const CONFIG = {
   DRY_RUN:           process.env.DRY_RUN === "true",
   X_BEARER_TOKEN:    process.env.X_BEARER_TOKEN || "",
   API_PORT:          parseInt(process.env.API_PORT || "3001"),
-  API_SECRET:        process.env.API_SECRET || "bondli_default",
-  PLATFORM_WALLET:   process.env.PLATFORM_WALLET || "anal.sol",
-  FEE_SALT:          process.env.FEE_SALT || "bndl3xK9",
+  API_SECRET:        process.env.API_SECRET || null,          // no default: a published secret is not a secret
+  PLATFORM_WALLET:   process.env.PLATFORM_WALLET || null,     // no default: money never goes somewhere by accident
+  FEE_SALT:          process.env.FEE_SALT || null,            // no default: see fee-engine.mjs
 
   // Bags.fm integration — https://dev.bags.fm
   BAGS_API_KEY:            process.env.BAGS_API_KEY || "",

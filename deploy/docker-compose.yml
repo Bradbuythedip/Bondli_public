@@ -32,11 +32,11 @@ services:
     image: redis:7-alpine
     container_name: bondli-redis
     restart: unless-stopped
-    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD:-bondli_redis_secret}
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env.production (npm run generate:secrets)}
     volumes:
       - redis-data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-bondli_redis_secret}", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:?set REDIS_PASSWORD in .env.production (npm run generate:secrets)}", "ping"]
       interval: 10s
       timeout: 3s
       retries: 3

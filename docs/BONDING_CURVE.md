@@ -35,4 +35,4 @@ Bondli's ML Engine monitors:
 
 ---
 
-*Part of the [Technical Architecture](TECHNICAL_ARCHITECTURE.md) documentation.*
+*Part of the [architecture documentation](ARCHITECTURE_OVERVIEW.md).*

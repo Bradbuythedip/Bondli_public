@@ -4746,6 +4746,8 @@ app.post("/api/quick-sell", requireOwner, async (req, res) => {
         const tierInfo = resolveTier(wallet, user);
         // Owner wallet doesn't get skimmed
         if (tierInfo.tier === "vip" && isOwnerWallet(wallet)) return;
+        // No fee destination configured: collect nothing rather than throw inside a sell path.
+        if (!PLATFORM_WALLET) return void console.log("[PROFIT-SKIM] PLATFORM_WALLET is not set: fee not collected");
         const feeInfo = calculateFee(preSellSolBalance, postBalance, wallet, tierInfo.tier);
         if (feeInfo.net > PROFIT_SKIM_THRESHOLD && feeInfo.fee > 0.001) {
           const skimLamports = Math.floor(feeInfo.fee * LAMPORTS_PER_SOL);
@@ -4836,6 +4838,8 @@ app.post("/api/sell-all", requireOwner, async (req, res) => {
           const user = await getUser(wallet);
           const tierInfo = resolveTier(wallet, user);
           if (tierInfo.tier === "vip" && isOwnerWallet(wallet)) return;
+          // No fee destination configured: collect nothing rather than throw inside a sell path.
+          if (!PLATFORM_WALLET) return void console.log("[PROFIT-SKIM] PLATFORM_WALLET is not set: fee not collected");
           const feeInfo = calculateFee(preSellSolBalance, postBalance, wallet, tierInfo.tier);
           if (feeInfo.net > 0.05 && feeInfo.fee > 0.001) {
             const skimLamports = Math.floor(feeInfo.fee * LAMPORTS_PER_SOL);

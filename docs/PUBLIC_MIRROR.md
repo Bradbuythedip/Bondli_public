@@ -39,8 +39,21 @@ service with live user funds in it. The findings that were fixed are summarised 
 [`AXIOMS.md`](AXIOMS.md). Publishing the unresolved half as a document, with reproduction steps
 against a running deployment, is not something we are willing to do while the money is real.
 
-That is the whole list. The README, every document under `docs/` except the audit journal, the
-engine, the venues, the tests, the frontend and the deployment files are all published.
+**The working draft of the grant form** — `docs/GRANT-ARC-APPLICATION.md`.
+
+Unfilled `{{placeholders}}`, `[FILL]` markers and personal fields. It is a form being filled in, not
+a description of the system. [`GRANT-ARC.md`](GRANT-ARC.md), the technical submission — every claim
+with the test that holds it — is published in its place.
+
+**Code only the excluded legacy server can reach** — `src/middleware/{security,auth,rate-limiter,
+validate}.mjs`, `src/payments/`, `src/db/`.
+
+Their only importer is `src/api/server.mjs`, which is itself excluded. Publishing code that nothing
+in the product runs invites a reader to audit a CORS rule or a payment path that is not in service,
+and it makes the repository look larger than the thing it actually describes.
+
+That is the whole list. The README, every other document under `docs/`, the engine, the venues, the
+tests, the frontend and the deployment files are all published.
 
 ## What is changed on the way out
 

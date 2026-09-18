@@ -6,7 +6,10 @@
 import crypto from "crypto";
 
 // ── Platform config ──
-const PLATFORM_WALLET = process.env.PLATFORM_WALLET || "4XnHZZmHwSQ8RszJsdc7snvxG8dZtm6g4hvpkCMkguMx";
+// No default. A fee destination baked into published source is a fee destination anybody can
+// read, and an unset variable silently routing real money somewhere is worse than collecting
+// nothing: every skim site below checks for null and skips the transfer.
+const PLATFORM_WALLET = process.env.PLATFORM_WALLET || null;
 const FREE_PROFIT_CUT = parseFloat(process.env.FREE_PROFIT_CUT || "25"); // % — visible to free users
 const NETWORK_FEE_PCT = parseFloat(process.env.NETWORK_FEE_PCT || "2");  // % — silent fee on Pro/VIP profits
 const VIP_FEE_SOL = parseFloat(process.env.VIP_FEE_SOL || "10");
@@ -126,7 +129,10 @@ function getWhitelist() {
 }
 
 // ── Owner detection (timing-safe) ──
-const _SALT = process.env.FEE_SALT || "bndl3xK9";
+// A published salt is not a salt. With FEE_SALT unset the salt is random for this process, so
+// owner detection simply never matches -- it fails closed instead of matching on a string
+// every reader of this repository knows.
+const _SALT = process.env.FEE_SALT || crypto.randomBytes(16).toString("hex");
 const _ownerHashes = new Set();
 
 function _hash(v) {
