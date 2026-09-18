@@ -7,8 +7,8 @@
 //
 //   --venue uniswap-v2|pons   where it trades (default uniswap-v2: launch.py's pool)   --pair 0xPAIR (the v2 pair; found from the factory if left out)
 //   --from-state launch_state.json   read token and pair from launch.py's state file and push them (goes live)
-//   --from-state launch/robinhood/fleet-state.json   same, for a PONS fleet launch (venue pons, the
-//                         site then links straight to the PONS buy page). Only the address is read.
+//   --from-state <fleet-state.json>  same, for a PONS launch (venue pons, so the site links straight
+//                         to the PONS buy page). Only the address is read.
 //   --status soon|live|graduated|off   --tagline "..."   --telegram URL   --launchpad URL (override the buy link)
 //   --update "text"       one line, newest shown on the site (last 20 kept)
 //   --clear-updates       drop every update line

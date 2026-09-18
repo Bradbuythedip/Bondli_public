@@ -28,6 +28,10 @@
 //   src/middleware/{security,auth,rate-limiter,validate}.mjs, src/payments/, src/db/
 //       reachable only from the excluded legacy development server. Publishing dead code invites a
 //       reader to audit a CORS rule or a payment path that nothing in the product runs.
+//   SHIP_IT.md
+//       a deployment guide written for an older shape of the project: it edits files the mirror does
+//       not contain and paths neither repository has. deploy/HOSTED_VELOCITY.md and docs/QUICKSTART.md
+//       are the accurate ones, and a ship guide a reader cannot follow is worse than no ship guide.
 //
 // Everything else is published, README and documentation included: `docs/` is owned by the mirror,
 // so a document that is not in this repository's docs/ does not survive there.
@@ -66,19 +70,16 @@ if (!fs.existsSync(path.join(DEST, ".git"))) {
 }
 
 // ── What stays private ──
-const EXCLUDE_PREFIXES = ["launch/", "docs/audit/", "tests/robinhood/", "tests/launch/"];
+const EXCLUDE_PREFIXES = ["launch/", "docs/audit/", "tests/robinhood/", "tests/launch/", "src/payments/", "src/db/"];
 const EXCLUDE_FILES = new Set([
   "GAME_THEORY.md",
   "docs/GRANT-ARC-APPLICATION.md",
+  "SHIP_IT.md",
   "src/api/server.mjs",
   "src/middleware/security.mjs",
   "src/middleware/auth.mjs",
   "src/middleware/rate-limiter.mjs",
   "src/middleware/validate.mjs",
-  "src/payments/payment-routes.mjs",
-  "src/payments/payment-verifier.mjs",
-  "src/db/session-store.mjs",
-  "src/db/user-store.mjs",
   "src/engine/fleet-brains.mjs",
   "src/engine/volume-engine.mjs",
   "src/engine/launch-orchestrator.mjs",

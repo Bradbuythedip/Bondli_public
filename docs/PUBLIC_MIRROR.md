@@ -45,6 +45,13 @@ Unfilled `{{placeholders}}`, `[FILL]` markers and personal fields. It is a form 
 a description of the system. [`GRANT-ARC.md`](GRANT-ARC.md), the technical submission — every claim
 with the test that holds it — is published in its place.
 
+**A deployment guide for an older shape of the project** — `SHIP_IT.md`.
+
+It tells the reader to edit files the mirror does not contain and paths neither repository has. A
+ship guide that cannot be followed is worse than no ship guide;
+[`deploy/HOSTED_VELOCITY.md`](../deploy/HOSTED_VELOCITY.md) and [`QUICKSTART.md`](QUICKSTART.md) are
+the accurate ones.
+
 **Code only the excluded legacy server can reach** — `src/middleware/{security,auth,rate-limiter,
 validate}.mjs`, `src/payments/`, `src/db/`.
 
@@ -89,7 +96,8 @@ success.
 
 Nothing in this arrangement is a substitute for not committing secrets. The script publishes what
 git tracks; `.env` and every runtime data directory are ignored in both repositories, and the
-environment file that *is* published, `.env.example`, carries names and explanations with no values.
+environment file that *is* published, `.env.example`, carries names, explanations and non-secret
+defaults — every credential field in it is empty.
 
 To reproduce the mirror from the working repository:
 

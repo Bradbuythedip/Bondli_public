@@ -8,7 +8,6 @@ The tree, annotated. Generated against the published file list; the counts are r
 ├── LICENSE                       MIT
 ├── .env.example                  every environment variable, with commentary and no values
 ├── package.json                  scripts and dependencies
-├── SHIP_IT.md                    the short deployment path (Vercel + Railway)
 ├── docker-compose.brad.yml       the optional BRAD cognitive sidecar
 │
 ├── .github/workflows/
