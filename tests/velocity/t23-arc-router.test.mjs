@@ -13,6 +13,13 @@ import {
   PORTAL_ABI, HOOK_ABI, STATE_VIEW_ABI, ERC20_ABI, TOPICS, poolIdFor, liquidityForSupply, sqrtRatioAtTick, sqrtRatioToX96, tickFromSqrtPriceX96, quoteBuy, quoteSell, snipeTaxBps,
 } from "../../src/velocity/venues/arc/chain.mjs";
 
+// The suite is offline by construction. These routers read an explorer and a public signature
+// database to turn a bare revert selector into a name -- best effort, never load-bearing. Left
+// to the real fetch, this file passes or fails on somebody else's uptime: the selector 0xdeadbeef
+// below actually resolves to a name on api.openchain.xyz, so the "nobody can name it" case only
+// happened on a machine with no internet.
+const offline = async () => { throw new Error("offline: the test suite makes no network calls"); };
+
 const addr = n => "0x" + n.toString(16).padStart(40, "0");
 const coder = AbiCoder.defaultAbiCoder();
 const portalI = new Interface(PORTAL_ABI), hookI = new Interface(HOOK_ABI), svI = new Interface(STATE_VIEW_ABI), erc = new Interface(ERC20_ABI), urI = new Interface(UNIVERSAL_ROUTER_ABI), p2I = new Interface(PERMIT2_ABI), errI = new Interface(ROUTER_ERRORS_ABI);
@@ -166,7 +173,7 @@ const reference = (c, over = {}) => ({
 });
 const order = (c, over = {}) => ({ id: "arc:o1", decisionId: "d1", instrument: TOKEN, side: "BUY", stake_usd: 25, max_slippage_bps: 2000, reference: reference(c), ...over });
 const position = (over = {}) => ({ id: "arc:x", instrument: TOKEN, reference: null, ...over });
-const router = async (c, over = {}) => { const r = new ArcLiveRouter({ secret: KEY, provider: c, confirmTimeoutMs: 3000, clock, ...over }); await r.init(); return r; };
+const router = async (c, over = {}) => { const r = new ArcLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, confirmTimeoutMs: 3000, clock, ...over }); await r.init(); return r; };
 
 // The default-RPC assertion below reads the environment; the operator's own endpoint must not leak into it.
 delete process.env.ARC_RPC_URL;
@@ -216,7 +223,7 @@ test("T23: the paper router fills on the arc venue at the order's own time", asy
 
 test("T23: init and preflight read the wallet's USDC from the native face and report it under the engine's name", async () => {
   const c = chain();
-  const r = new ArcLiveRouter({ secret: KEY, provider: c, clock });
+  const r = new ArcLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, clock });
   const pre = await r.init();
   assert.equal(r.venue, "arc"); assert.equal(r.mode, "live"); assert.equal(r.ready, true); assert.ok(/^0x[0-9a-fA-F]{40}$/.test(r.address));
   assert.equal(pre.wallet, r.address); assert.equal(pre.chainId, 5042); assert.equal(pre.quote, "USDC");
@@ -224,7 +231,7 @@ test("T23: init and preflight read the wallet's USDC from the native face and re
   assert.equal(pre.balanceSol, pre.balanceUsdc, "the engine reads the quote balance as balanceSol on every venue");
   assert.equal(pre.rpc, "https://rpc.mainnet.arc.io", "the default RPC when none is configured");
   const h = await r.health(); assert.equal(h.ok, true); assert.match(h.detail, /block 16/);
-  await assert.rejects(new ArcLiveRouter({ secret: "", provider: c }).init(), /ARC_PRIVATE_KEY/);
+  await assert.rejects(new ArcLiveRouter({ fetchImpl: offline, secret: "", provider: c }).init(), /ARC_PRIVATE_KEY/);
 });
 
 test("T23: a buy is approved once, dry-run, then sent as one V4_SWAP with the pool key, the exact input and the price floor", async () => {
@@ -321,7 +328,7 @@ test("T23: a wallet that cannot cover the stake and its gas is refused; a slippa
   assert.equal((await r.submit(o)).failure.code, "UNSUPPORTED");
   const noPool = order(c); noPool.reference.curve = { address: POOL };
   assert.equal((await r.submit(noPool)).failure.code, "NO_POOL");
-  assert.equal((await new ArcLiveRouter({ secret: KEY, provider: c }).submit(order(c))).failure.code, "NOT_READY");
+  assert.equal((await new ArcLiveRouter({ fetchImpl: offline, secret: KEY, provider: c }).submit(order(c))).failure.code, "NOT_READY");
   assert.equal((await r.submit(order(c, { legs: [{ instrument: TOKEN }] }))).failure.code, "UNSUPPORTED");
 });
 

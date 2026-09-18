@@ -173,10 +173,13 @@ export class ArcPaperRouter extends PaperRouter {
 
 /** A live router on an EVM wallet. `secret` is the 0x-prefixed private key of a dedicated wallet. */
 export class ArcLiveRouter extends Router {
-  constructor({ secret = null, rpcUrl = null, provider = null, slippagePct = 15, confirmTimeoutMs = 15_000, gasLimitBuy = 600_000n, gasLimitSell = 600_000n, clock } = {}) {
+  constructor({ secret = null, rpcUrl = null, provider = null, slippagePct = 15, confirmTimeoutMs = 15_000, gasLimitBuy = 600_000n, gasLimitSell = 600_000n, clock, fetchImpl = globalThis.fetch } = {}) {
     super({ venue: "arc", mode: "live", clock });
     this.secret = secret; this.rpcUrl = rpcUrl; this.provider = provider; this.slippagePct = slippagePct; this.confirmTimeoutMs = confirmTimeoutMs;
     this.gasLimitBuy = gasLimitBuy; this.gasLimitSell = gasLimitSell;
+    // Best effort, never load-bearing: the explorer ABI and the signature database only turn a bare
+    // selector into a name. Injectable so the suite never depends on somebody else's uptime.
+    this.fetch = fetchImpl;
     this.ready = false; this.address = null; this.known = new Set(); this._pools = new Map(); // tokens this wallet has been told about (EVM has no account enumeration)
     this._permit2Code = null; // whether Permit2 has code on this chain, once checked
     this._approved = new Set(); // currencies whose Permit2 path this process has already set up
@@ -415,11 +418,11 @@ export class ArcLiveRouter extends Router {
       if (!this._abis.has(key)) {
         const abis = [];
         for (const addr of [key, pool.token && lower(pool.token)].filter(Boolean)) {
-          const res = await fetch(`${EXPLORER}/api/v2/smart-contracts/${addr}`, { headers: { Accept: "application/json", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) bondli/1.0" }, signal: AbortSignal.timeout(6000) });
+          const res = await this.fetch(`${EXPLORER}/api/v2/smart-contracts/${addr}`, { headers: { Accept: "application/json", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) bondli/1.0" }, signal: AbortSignal.timeout(6000) });
           if (!res.ok) throw new Error(`explorer ${res.status}`);
           const j = await res.json();
           if (Array.isArray(j.abi)) abis.push(j.abi);
-          for (const impl of j.implementations || []) { if (impl.address) { const r2 = await fetch(`${EXPLORER}/api/v2/smart-contracts/${impl.address}`, { headers: { Accept: "application/json", "User-Agent": "Mozilla/5.0 bondli/1.0" }, signal: AbortSignal.timeout(6000) }).catch(() => null); const j2 = r2?.ok ? await r2.json() : null; if (Array.isArray(j2?.abi)) abis.push(j2.abi); } }
+          for (const impl of j.implementations || []) { if (impl.address) { const r2 = await this.fetch(`${EXPLORER}/api/v2/smart-contracts/${impl.address}`, { headers: { Accept: "application/json", "User-Agent": "Mozilla/5.0 bondli/1.0" }, signal: AbortSignal.timeout(6000) }).catch(() => null); const j2 = r2?.ok ? await r2.json() : null; if (Array.isArray(j2?.abi)) abis.push(j2.abi); } }
         }
         this._abis.set(key, abis.map(a => new Interface(a.filter(x => x.type === "error"))));
       }
@@ -435,7 +438,7 @@ export class ArcLiveRouter extends Router {
     if (this._selectors.has(sel)) return this._selectors.get(sel);
     let name = null;
     try {
-      const r = await fetch(`https://api.openchain.xyz/signature-database/v1/lookup?function=${sel}&filter=true`, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(4000) });
+      const r = await this.fetch(`https://api.openchain.xyz/signature-database/v1/lookup?function=${sel}&filter=true`, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(4000) });
       if (r.ok) { const j = await r.json(); name = j?.result?.function?.[sel]?.[0]?.name || null; }
     } catch {}
     this._selectors.set(sel, name);

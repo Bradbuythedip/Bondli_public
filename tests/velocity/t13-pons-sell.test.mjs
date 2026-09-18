@@ -7,6 +7,13 @@ import { JsonRpcProvider, Interface, AbiCoder, Transaction, zeroPadValue } from 
 import { PonsLiveRouter } from "../../src/velocity/venues/pons/router.mjs";
 import { FACTORY, FACTORY_ABI, CURVE_ABI, ERC20_ABI, TOPICS, toWei } from "../../src/velocity/venues/pons/chain.mjs";
 
+// The suite is offline by construction. These routers read an explorer and a public signature
+// database to turn a bare revert selector into a name -- best effort, never load-bearing. Left
+// to the real fetch, this file passes or fails on somebody else's uptime: the selector 0xdeadbeef
+// below actually resolves to a name on api.openchain.xyz, so the "nobody can name it" case only
+// happened on a machine with no internet.
+const offline = async () => { throw new Error("offline: the test suite makes no network calls"); };
+
 const factory = new Interface(FACTORY_ABI), curveI = new Interface(CURVE_ABI), erc = new Interface(ERC20_ABI), coder = AbiCoder.defaultAbiCoder();
 const TOKEN = "0x" + "a1".repeat(20), CURVE = "0x" + "c1".repeat(20), KEY = "0x" + "7".repeat(64);
 const BAL = 999_999_999_999_999_999_999_999_999n; // just under 1e9 tokens: as a float it rounds UP to 1e27 units
@@ -85,7 +92,7 @@ function chain(over = {}) { return new FakeChain({ balance: BAL, allowance: 0n, 
 const position = (over = {}) => ({ id: "pons:x", instrument: TOKEN, reference: null, ...over });
 
 test("T13: a position with no curve is sold anyway: the factory names the curve, the wallet's exact balance is sold, approve first", async () => {
-  const c = chain(); const r = new PonsLiveRouter({ secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
+  const c = chain(); const r = new PonsLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
   const res = await r.close(position(), 100, { reference: { solPrice: 3000 } });
   assert.equal(res.ok, true, JSON.stringify(res.failure));
   assert.equal(c.s.sold, BAL, "sold exactly what the wallet held, not the float-rounded 1e27");
@@ -101,7 +108,7 @@ test("T13: a position with no curve is sold anyway: the factory names the curve,
 });
 
 test("T13: half a position sells half the units; the quote comes from the curve now, so minOut tracks the live reserves", async () => {
-  const c = chain({ allowance: 2n ** 255n }); const r = new PonsLiveRouter({ secret: KEY, provider: c, confirmTimeoutMs: 3000, slippagePct: 15 }); await r.init();
+  const c = chain({ allowance: 2n ** 255n }); const r = new PonsLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, confirmTimeoutMs: 3000, slippagePct: 15 }); await r.init();
   // the reference lies (stale reserves far richer than the curve): a quote from it would revert on minOut
   const res = await r.close(position({ reference: { curve: { address: CURVE, quoteReserve: 40, tokenReserve: 8e8 } } }), 50, { reference: { solPrice: 3000, curve: { address: CURVE, quoteReserve: 40, tokenReserve: 8e8 } } });
   assert.equal(res.ok, true, JSON.stringify(res.failure));
@@ -112,14 +119,14 @@ test("T13: half a position sells half the units; the quote comes from the curve 
 });
 
 test("T13: a sell that would revert is refused in the dry run with the reason, and no transaction is sent", async () => {
-  const c = chain({ allowance: 2n ** 255n, revert: "Curve: slippage" }); const r = new PonsLiveRouter({ secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
+  const c = chain({ allowance: 2n ** 255n, revert: "Curve: slippage" }); const r = new PonsLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
   const res = await r.close(position(), 100, { reference: { solPrice: 3000 } });
   assert.equal(res.ok, false); assert.equal(res.failure.code, "REVERT"); assert.match(res.failure.reason, /slippage/);
   assert.equal(c.sent.length, 0, "no gas spent");
 });
 
 test("T13: graduated curve and unknown token are named, not attempted", async () => {
-  const c = chain({ graduated: true }); const r = new PonsLiveRouter({ secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
+  const c = chain({ graduated: true }); const r = new PonsLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
   const g = await r.close(position(), 100, { reference: { solPrice: 3000 } });
   assert.equal(g.failure.code, "GRADUATED");
   const u = await r.close(position({ instrument: "0x" + "e2".repeat(20) }), 100, { reference: { solPrice: 3000 } });
@@ -127,7 +134,7 @@ test("T13: graduated curve and unknown token are named, not attempted", async ()
 });
 
 test("T13: a curve that refuses the whole amount but takes a quarter is sold in chunks until empty", async () => {
-  const c = chain({ allowance: 2n ** 255n, balance: 800n * 10n ** 18n, maxUnits: 250n * 10n ** 18n }); const r = new PonsLiveRouter({ secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
+  const c = chain({ allowance: 2n ** 255n, balance: 800n * 10n ** 18n, maxUnits: 250n * 10n ** 18n }); const r = new PonsLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
   const res = await r.close(position({ reference: { curve: { address: CURVE } } }), 100, { reference: { solPrice: 3000 } });
   assert.equal(res.ok, true, JSON.stringify(res.failure));
   assert.equal(c.s.balance, 0n, "everything sold");
@@ -136,7 +143,7 @@ test("T13: a curve that refuses the whole amount but takes a quarter is sold in 
 });
 
 test("T13: a custom error the ABI does not know is named by selector when the explorer cannot help", async () => {
-  const c = chain({ allowance: 2n ** 255n, maxUnits: 0n }); const r = new PonsLiveRouter({ secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
+  const c = chain({ allowance: 2n ** 255n, maxUnits: 0n }); const r = new PonsLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
   r._abis = new Map([[CURVE, []]]); // explorer already consulted: nothing known
   const res = await r.close(position({ reference: { curve: { address: CURVE } } }), 100, { reference: { solPrice: 3000 } });
   assert.equal(res.ok, false); assert.equal(res.failure.code, "REVERT"); assert.match(res.failure.reason, /custom error 0xdeadbeef/);
@@ -145,7 +152,7 @@ test("T13: a custom error the ABI does not know is named by selector when the ex
 
 test("T13: a chunked sell that stops part-way reports what it filled, so the position is not booked closed", async () => {
   const c = chain({ allowance: 2n ** 255n });
-  const r = new PonsLiveRouter({ secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
+  const r = new PonsLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
   // The curve takes the first chunk and then refuses: the second chunk's dry run reverts.
   let sells = 0;
   const realCall = c.call.bind(c);
@@ -164,7 +171,7 @@ test("T13: a chunked sell that stops part-way reports what it filled, so the pos
 
 test("T13: a sell is refused rather than booked as a total loss when the quote price is unknown", async () => {
   const c = chain({ allowance: 2n ** 255n });
-  const r = new PonsLiveRouter({ secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
+  const r = new PonsLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
   const res = await r.close(position({ reference: { curve: { address: CURVE } } }), 100, { reference: { curve: { address: CURVE } } });
   assert.equal(res.ok, false);
   assert.equal(res.failure.code, "NO_QUOTE_PRICE");
@@ -174,7 +181,7 @@ test("T13: a sell is refused rather than booked as a total loss when the quote p
 test("T13: a Robinhood Chain position whose tokens are gone is checked against the chain first", async () => {
   const { TOPICS } = await import("../../src/velocity/venues/pons/chain.mjs");
   const c = chain({ balance: 0n, allowance: 2n ** 255n });
-  const r = new PonsLiveRouter({ secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
+  const r = new PonsLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
   const me = r.address.toLowerCase();
 
   // The curve's own record of a sale: CurveSell(seller, recipient, tokensIn, quoteOut, fee, tax).
@@ -212,7 +219,7 @@ test("T13: a Robinhood Chain position whose tokens are gone is checked against t
 test("T13: a sell never offers the position at any price, and shrinks the order before widening the price", async () => {
   // The curve will only pay a little: nothing near a full-size quote clears, but a small order does.
   const c = chain({ allowance: 2n ** 255n, acceptOut: toWei(0.3) });
-  const r = new PonsLiveRouter({ secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
+  const r = new PonsLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
   const res = await r.close(position({ reference: { curve: { address: CURVE }, solPrice: 2000 } }), 100, { reference: { curve: { address: CURVE }, solPrice: 2000 } });
   assert.equal(res.ok, true, res.failure?.reason);
 
@@ -229,7 +236,7 @@ test("T13: a sell never offers the position at any price, and shrinks the order 
 test("T13: when no order clears at a fair price the sell fails and is retried, rather than dumping at zero", async () => {
   // The curve pays essentially nothing at any size: there is no honest sell here.
   const c = chain({ allowance: 2n ** 255n, acceptOut: 1n });
-  const r = new PonsLiveRouter({ secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
+  const r = new PonsLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, confirmTimeoutMs: 3000 }); await r.init();
   const res = await r.close(position({ reference: { curve: { address: CURVE }, solPrice: 2000 } }), 100, { reference: { curve: { address: CURVE }, solPrice: 2000 } });
   assert.equal(res.ok, false);
   assert.equal(res.failure.code, "REVERT");

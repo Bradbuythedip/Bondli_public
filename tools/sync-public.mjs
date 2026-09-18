@@ -135,8 +135,10 @@ const TRANSFORMS = {
     }
     must(pkg.scripts["api:dev"] === "node src/api/server.mjs", "package.json api:dev changed");
     pkg.scripts["api:dev"] = "node src/api/server.production.mjs";
-    must(pkg.scripts.test.includes("tests/robinhood/*.test.mjs") && pkg.scripts.test.includes("tests/launch/*.test.mjs"), "package.json test glob changed");
-    pkg.scripts.test = pkg.scripts.test.replace(" tests/robinhood/*.test.mjs", "").replace(" tests/launch/*.test.mjs", "");
+    for (const k of ["test", "test:offline"]) {
+      must(typeof pkg.scripts[k] === "string" && pkg.scripts[k].includes("tests/robinhood/*.test.mjs") && pkg.scripts[k].includes("tests/launch/*.test.mjs"), `package.json ${k} glob changed`);
+      pkg.scripts[k] = pkg.scripts[k].replace(" tests/robinhood/*.test.mjs", "").replace(" tests/launch/*.test.mjs", "");
+    }
     pkg.repository = { type: "git", url: PUBLIC_REPO };
     return JSON.stringify(pkg, null, 2) + "\n";
   },

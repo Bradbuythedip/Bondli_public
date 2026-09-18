@@ -141,13 +141,18 @@ A fuller tree is in [docs/REPO_STRUCTURE.md](docs/REPO_STRUCTURE.md).
 ## Run the tests
 
 ```bash
-npm install
+npm install && npm install --prefix app
 npm test
+npm run test:offline     # the same suite, with every call to the outside world made to throw
 ```
 
 The whole suite runs offline and green. No RPC, no API key and no funded wallet: every chain the
-tests touch is a fake built inside the test file, and the two Solana and EVM routers are driven
-through injected fakes rather than a node.
+tests touch is a fake built inside the test file, and the routers are driven through injected fakes
+rather than a node.
+
+`test:offline` is how that claim stays true. It reruns the suite with `fetch` replaced by one that
+throws for anything outside this machine, so a code path that quietly reaches the internet fails the
+build instead of making the suite depend on somebody else's uptime. CI runs both.
 
 ## Run the stack
 

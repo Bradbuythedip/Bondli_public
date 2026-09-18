@@ -30,5 +30,10 @@ jobs:
       - name: Test
         run: npm test
 
+      # The suite claims to run offline. This runs it again with every call to the outside world
+      # made to throw, so the claim is checked rather than asserted.
+      - name: Test offline
+        run: npm run test:offline
+
       - name: Check the Arc package parses standalone
         run: node --check packages/arc-argus/chain.mjs && node --check packages/arc-argus/index.mjs

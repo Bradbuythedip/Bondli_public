@@ -41,10 +41,14 @@ export class PonsPaperRouter extends PaperRouter {
 
 /** A live router on an EVM wallet. `secret` is the 0x-prefixed private key of a dedicated wallet. */
 export class PonsLiveRouter extends Router {
-  constructor({ secret = null, rpcUrl = null, provider = null, slippagePct = 15, confirmTimeoutMs = 25_000, gasLimitBuy = 400_000n, gasLimitSell = 350_000n, clock } = {}) {
+  constructor({ secret = null, rpcUrl = null, provider = null, slippagePct = 15, confirmTimeoutMs = 25_000, gasLimitBuy = 400_000n, gasLimitSell = 350_000n, clock, fetchImpl = globalThis.fetch } = {}) {
     super({ venue: "pons", mode: "live", clock });
     this.secret = secret; this.rpcUrl = rpcUrl; this.provider = provider; this.slippagePct = slippagePct; this.confirmTimeoutMs = confirmTimeoutMs;
     this.gasLimitBuy = gasLimitBuy; this.gasLimitSell = gasLimitSell;
+    // The explorer and the signature database are the only things this router reads off-chain, and both
+    // are best effort: they name a revert, they never decide a trade. Injectable so a test is
+    // hermetic -- a suite that reaches the internet passes or fails on somebody else's uptime.
+    this.fetch = fetchImpl;
     this.ready = false; this.address = null; this.known = new Set(); this._curves = new Map(); // tokens this wallet has been told about (EVM has no account enumeration)
   }
 
@@ -190,11 +194,11 @@ export class PonsLiveRouter extends Router {
         // so the revert can come from the token's own code -- a transfer restriction, a blacklist, a
         // pause. Reading only the curve's ABI left those as a bare selector nobody could act on.
         for (const addr of [key, tokenAddr && String(tokenAddr).toLowerCase()].filter(Boolean)) {
-          const res = await fetch(`${EXPLORER}/api/v2/smart-contracts/${addr}`, { headers: { Accept: "application/json", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) bondli/1.0" }, signal: AbortSignal.timeout(6000) });
+          const res = await this.fetch(`${EXPLORER}/api/v2/smart-contracts/${addr}`, { headers: { Accept: "application/json", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) bondli/1.0" }, signal: AbortSignal.timeout(6000) });
           if (!res.ok) throw new Error(`explorer ${res.status}`);
           const j = await res.json();
           if (Array.isArray(j.abi)) abis.push(j.abi);
-          for (const impl of j.implementations || []) { if (impl.address) { const r2 = await fetch(`${EXPLORER}/api/v2/smart-contracts/${impl.address}`, { headers: { Accept: "application/json", "User-Agent": "Mozilla/5.0 bondli/1.0" }, signal: AbortSignal.timeout(6000) }).catch(() => null); const j2 = r2?.ok ? await r2.json() : null; if (Array.isArray(j2?.abi)) abis.push(j2.abi); } }
+          for (const impl of j.implementations || []) { if (impl.address) { const r2 = await this.fetch(`${EXPLORER}/api/v2/smart-contracts/${impl.address}`, { headers: { Accept: "application/json", "User-Agent": "Mozilla/5.0 bondli/1.0" }, signal: AbortSignal.timeout(6000) }).catch(() => null); const j2 = r2?.ok ? await r2.json() : null; if (Array.isArray(j2?.abi)) abis.push(j2.abi); } }
         }
         this._abis.set(key, abis.map(a => new Interface(a.filter(x => x.type === "error"))));
       }
@@ -217,7 +221,7 @@ export class PonsLiveRouter extends Router {
     if (this._selectors.has(sel)) return this._selectors.get(sel);
     let name = null;
     try {
-      const r = await fetch(`https://api.openchain.xyz/signature-database/v1/lookup?function=${sel}&filter=true`, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(4000) });
+      const r = await this.fetch(`https://api.openchain.xyz/signature-database/v1/lookup?function=${sel}&filter=true`, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(4000) });
       if (r.ok) { const j = await r.json(); name = j?.result?.function?.[sel]?.[0]?.name || null; }
     } catch {}
     this._selectors.set(sel, name);
