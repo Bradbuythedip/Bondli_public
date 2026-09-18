@@ -461,6 +461,20 @@ test("T11: a position the venue will not sell can be given up on, and the banner
 // Paper: the whole machine on the real feed, with only the fills simulated. What must hold is that
 // it needs no funded wallet, can never reach a live router, and is never charged a fee -- and that
 // it is still the same engine, so a paper run tells you something about a live one.
+/** Wait for the engine to have actually reacted, instead of for a fixed number of milliseconds.
+ *  A fixed sleep is a bet on how busy the machine is. These assertions passed here for months and
+ *  then failed on a CI runner sharing two cores with twenty other test files, which is the worst
+ *  way to learn it: green exactly where you look. */
+const until = async (pred, what, timeoutMs = 5_000, everyMs = 5) => {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    const v = await pred();
+    if (v) return v;
+    if (Date.now() > deadline) throw new Error(`timed out after ${timeoutMs}ms waiting for ${what}`);
+    await new Promise(res => setTimeout(res, everyMs));
+  }
+};
+
 test("T11: a paper run trades the live feed with simulated money and cannot touch a real wallet", async () => {
   const root = tmp();
   const feed = new ScriptedFeed({ venue: "pumpfun", script: [] });
@@ -485,15 +499,14 @@ test("T11: a paper run trades the live feed with simulated money and cannot touc
     // The same feed, the same gates: a candidate is judged and filled, just not with money.
     const now = Date.now();
     feed.emitEvent({ kind: "candidate", id: "MintP", payload: goodCandidatePayload("MintP"), t_venue: now - 100 });
-    await new Promise(res => setTimeout(res, 50));
     const eng = hub.users.get("Paper").engine;
-    const pos = eng.store.openPositions()[0];
+    const pos = await until(() => eng.store.openPositions()[0], "the paper buy to fill").catch(() => null);
     assert.ok(pos, "paper still buys: " + JSON.stringify(eng.funnel()));
     assert.equal(pos.paper, true);
 
     // Close it at a profit. The real day's ledger never moves and no fee is transferred.
     feed.emitEvent({ kind: "tick", id: "MintP", payload: tickPayload("MintP", 4_000), t_venue: now + 900 });
-    await new Promise(res => setTimeout(res, 50));
+    await until(() => eng.store.openPositions().length === 0, "the paper position to close");
     assert.equal(eng.store.openPositions().length, 0);
     assert.equal(eng.store.state.day.realizedUsd, 0, "simulated money never touches the real day");
     assert.ok(eng.store.state.day.paperTrades >= 1);
@@ -519,10 +532,13 @@ test("T11: a fee whose transfer fails is recorded as owed and collected on the n
     const eng = hub.users.get("Owed").engine;
     const trade = async (id) => {
       const now = Date.now();
+      const feesBefore = eng.ledger.query({ kind: "fee", limit: 50 }).length;
       feed.emitEvent({ kind: "candidate", id, payload: goodCandidatePayload(id), t_venue: now - 100 });
-      await new Promise(res => setTimeout(res, 50)); await eng.enqueue(() => {});
+      await until(() => eng.store.openPositions().length > 0, `${id} to fill`); await eng.enqueue(() => {});
       feed.emitEvent({ kind: "tick", id, payload: tickPayload(id, 17_000, { dynamics: { scores: 5, velocity: -0.6, acceleration: -0.2, trend: "crashing" } }), t_venue: now + 500 });
-      await new Promise(res => setTimeout(res, 80)); await eng.enqueue(() => {}); await new Promise(res => setTimeout(res, 30));
+      await until(() => eng.store.openPositions().length === 0, `${id} to close`); await eng.enqueue(() => {});
+      // The fee settles off the outcome handler, so the close landing is not the fee landing.
+      await until(() => eng.ledger.query({ kind: "fee", limit: 50 }).length > feesBefore, `the fee record for ${id}`);
     };
     await trade("MintOwe1");
     assert.deepEqual(live.transfers, [], "nothing moved");
@@ -558,10 +574,10 @@ test("T11: the public pulse names no wallet and counts no paper money", async ()
     assert.ok(live.ok && paper.ok);
     const now = Date.now();
     feed.emitEvent({ kind: "candidate", id: "MintP", payload: goodCandidatePayload("MintP"), t_venue: now - 100 });
-    await new Promise(res => setTimeout(res, 50));
+    await until(() => ["Real", "Pretend"].every(w => hub.users.get(w).engine.store.openPositions().length > 0), "both bots to fill");
     for (const w of ["Real", "Pretend"]) await hub.users.get(w).engine.enqueue(() => {});
     feed.emitEvent({ kind: "tick", id: "MintP", payload: tickPayload("MintP", 17_000, { dynamics: { scores: 5, velocity: -0.6, acceleration: -0.2, trend: "crashing" } }), t_venue: now + 500 });
-    await new Promise(res => setTimeout(res, 80));
+    await until(() => ["Real", "Pretend"].every(w => hub.users.get(w).engine.store.openPositions().length === 0), "both bots to close");
     for (const w of ["Real", "Pretend"]) await hub.users.get(w).engine.enqueue(() => {});
     const p = hub.pulse();
     assert.equal(p.bots, 2); assert.equal(p.live, 1, "the paper bot is a bot, not a live one");

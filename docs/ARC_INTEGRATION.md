@@ -1,6 +1,6 @@
 # Bondli on Arc: the USDC-native venue
 
-Arc is Circle's EVM L1 (chain id `5042`). Its gas asset is USDC, and Argus is its launchpad. Bondli
+Arc is Circle's EVM L1. Its gas asset is USDC, and Argus is its launchpad. Bondli
 trades Argus launches in their first minutes with the same engine it runs on pump.fun and on
 Robinhood Chain — but with one difference that changes the accounting everywhere: **the quote asset
 is the dollar itself.**
@@ -15,7 +15,13 @@ is USDC, the profit is USDC and the platform's fee leaves in USDC. `solPrice` on
 constant `1` — the field keeps the engine's name because the engine reads it by that name on every
 venue, and on this one it is not a price, it is an identity.
 
-That is axiom 11 in [`docs/AXIOMS.md`](AXIOMS.md), and `tests/velocity/t11-hub.test.mjs` holds it.
+That is axiom 11 in [`docs/AXIOMS.md`](AXIOMS.md), and `tests/velocity/t22-arc-feed.test.mjs` holds it.
+
+**The chain id is `5042`, and we do not treat that as settled.** It is the figure Argus's own
+documents give; third-party Arc documentation reports `5042002`. Rather than pick one and hope, the
+router asks the node: `preflight()` sends `eth_chainId` and refuses to go live against an RPC that
+answers for anything else, so a wrong constant costs a refusal at start-up instead of a transaction
+signed for the wrong chain.
 
 ---
 
@@ -44,10 +50,11 @@ Three files, plus one published package:
 | The live router and the paper model | `src/velocity/venues/arc/router.mjs` | 622 |
 | The in-repo re-export, so the venue and the package never drift | `src/velocity/venues/arc/chain.mjs` | 4 |
 
-`@bondli/arc-argus` is the only published Argus indexer and pool-math library we know of. It is pure
-functions over `ethers` — nothing in the module touches the network — so an indexer, a dashboard or
-another trading client can use it without taking Bondli's engine. The feed and the router in this
-repository are its worked example.
+`@bondli/arc-argus` is packaged to stand on its own, and we know of no other Argus indexer or
+pool-math library. It is not on npm yet — publishing 1.0 is milestone 1 of the grant — so today it
+is installed from this repository. It is pure functions over `ethers`, and nothing in the module
+touches the network, so an indexer, a dashboard or another trading client can use it without taking
+Bondli's engine. The feed and the router here are its worked example.
 
 ---
 
@@ -78,8 +85,10 @@ This is the part a reviewer should read first, because it is the part that could
 `CurveOpened`), their `topic0`, and the layout of the `launches(token)` record for each Portal
 version come from Argus's own `onchain/addresses.md`, `onchain/event-signatures.md` and
 `onchain/launch-record-layout.md`. The `PoolManager` and `StateView` ABIs are Uniswap v4's. Every
-topic is asserted to equal both the keccak of its own signature and the published constant
-(`t20-arc-chain`), so a typo cannot survive a test run.
+topic is asserted to equal the keccak of the signature as written here, and `TokenCreated` and `Swap`
+are additionally pinned to the `topic0` Argus and Uniswap publish (`t20-arc-chain`). So a typo in a
+signature cannot survive a test run, and for the two topics with a published constant, neither can a
+wrong signature.
 
 **Not pinned.** The `LaunchHook` interface — its getters, the `Bonded` and `TaxCollected` events, and
 the snipe-tax formula — comes from the reference `contracts/LaunchHook.sol` in Argus's repository,
@@ -120,8 +129,10 @@ Argus is not a virtual curve, and treating it like one would misprice every trad
 - **The launch record grew across Portal versions** (9, 10 or 11 words), and an 11-word ABI decode
   reverts on the shorter ones. `decodeLaunchWords` reads the raw return by word position as a prefix
   of the newest layout; a field a record does not carry comes back `null` and is read from the hook.
-- **Older Portals still own their launches.** All seven are indexed; a newer Portal never replaces an
-  older one's tokens.
+- **Older Portals still own their launches.** All seven are indexed and a newer Portal never
+  replaces an older one's tokens — but only the five v4 Portals carry a `LaunchHook` and a v4 pool.
+  The first two are legacy Uniswap v3 launches with the tax inside the token, and this engine does
+  not price or trade them.
 - **The snipe tax is 99% decaying over three seconds**, as the reference hook computes it:
   `9900 >> ((whole seconds since launch * 14) / 3)`, which is 9900, 618, 19, then 0 basis points. The
   candidate floor sits at the window plus two seconds of slack, because the bot's clock is not the
@@ -136,10 +147,10 @@ Argus is not a virtual curve, and treating it like one would misprice every trad
 | Every swap is dry-run before it is sent | `router.mjs` `_dryRun` | `t23` |
 | A buy inside the snipe window is refused, and the chain's own launch time is checked too | `router.mjs` `submit` | `t23` |
 | Size shrinks before price widens; no sell below 85% of the pool's quote; `minOut` never 0 | `router.mjs` `_sellShape`, `close` | `t23` |
-| An RPC answering for another chain is refused at init | `router.mjs` `init` | `t23` |
-| The wallet must cover the stake **and** its gas | `router.mjs` `preflight` | `t23` |
+| An RPC answering for another chain is refused before going live | `router.mjs` `preflight` | `t23` |
+| The wallet must cover the stake **and** its gas | `router.mjs` `submit` | `t23` |
 | A held token ticks every poll, readable or not, and says when it is unreadable | `feed.mjs` | `t22`, `t27` |
-| A watched token the Portals cannot name is retried with backoff, never dropped | `feed.mjs` `_adoptLater` | `t22` |
+| A watched token the Portals cannot name is retried with backoff, never dropped | `feed.mjs` `_adoptLater` | `t27` |
 | A failing RPC is polled less and less, to a minute at most, and recovers immediately | `feed.mjs` `pollDelay` | `t22` |
 | The fee leaves as native USDC to the EVM fee wallet, never converted | `hub.mjs` `settleFee` | `t11`, `t23` |
 | RPC error text never reaches a public health route (it can quote the API key) | `hub.mjs` health | `t25` |
@@ -152,7 +163,7 @@ Argus is not a virtual curve, and treating it like one would misprice every trad
 
 - launches in the last hour and the last day, and how many bonded;
 - the tax terms creators actually choose, as a histogram;
-- first-hour distinct buyers and volume;
+- first-hour buyers per launch, summed across the hour's launches, and volume;
 - the last 50 launches with market cap, progress, bonded flag, buy and sell tax, and an explorer
   link;
 - the Arc wallet-intelligence signal as an **aggregate only**. The list of wallets the bot considers
@@ -165,7 +176,7 @@ polled unless someone is trading (`src/api/activity.mjs`, `t29`).
 Wallet intelligence on Arc is the same measured scorer used on pump.fun: FIFO cost basis, a Wilson
 lower bound on win rate so 5/5 never outranks 70/100, early-hit rate, and ring and wash detection
 with rings as connected components. It runs over Arc swaps attributed to the transaction's sender,
-never to the router (`t24`, `t30`, `tests/radar/wallet-intel.test.mjs`).
+never to the router (`t22`, `t30`, `tests/radar/wallet-intel.test.mjs`).
 
 ---
 
@@ -183,8 +194,10 @@ node --test tests/velocity/t20-arc-chain.test.mjs \
             tests/api/t30-arc-grant-surfaces.test.mjs
 ```
 
-Every Arc test runs against a fake chain built in the test file. Nothing reaches the network, and no
-key, RPC or funded wallet is needed to run or read them.
+`t20`, `t22` and `t23` run against a fake chain built in the test file; `t25` and `t30` assert on the
+server's own source, where there is no seam to render in isolation. Nothing reaches the network — 
+`npm run test:offline` reruns the whole suite with every outbound call made to throw — and no key,
+RPC or funded wallet is needed to run or read any of it.
 
 To point a server at the real chain:
 

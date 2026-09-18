@@ -1,7 +1,7 @@
 # @bondli/arc-argus
 
 Argus, the launchpad on Arc (Circle's USDC-gas L1, chain id 5042), as data. This is the layer a
-trading client, an indexer or a dashboard needs and nobody had published: every Portal that ever
+trading client, an indexer or a dashboard needs and nobody has published (this one is not on npm yet either — install it from the repository): every Portal that ever
 launched a token, the events they emit, the shape of their `launches(token)` records across seven
 versions, the Uniswap v4 pool a launch opens, the hook's tax model including the 99% snipe tax that
 decays over the first three seconds, and the exact swap encodings for the UniversalRouter through

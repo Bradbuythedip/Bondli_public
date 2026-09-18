@@ -234,6 +234,24 @@ test("T23: init and preflight read the wallet's USDC from the native face and re
   await assert.rejects(new ArcLiveRouter({ fetchImpl: offline, secret: "", provider: c }).init(), /ARC_PRIVATE_KEY/);
 });
 
+// The chain id is the one constant in chain.mjs that a published source and a third-party document
+// disagree about (5042 vs 5042002), so the router does not trust the constant: it asks the node
+// before it reads a balance or signs anything. Nothing tested this, and the doc claimed it did.
+test("T23: an RPC that answers for another chain is refused before the wallet is read or anything is signed", async () => {
+  const c = chain();
+  const real = c.rpc.bind(c);
+  let balanceReads = 0;
+  c.rpc = async (method, params) => {
+    if (method === "eth_chainId") return "0x" + (5042002).toString(16); // what third-party Arc docs report
+    if (method === "eth_getBalance") balanceReads++;
+    return real(method, params);
+  };
+  const r = new ArcLiveRouter({ fetchImpl: offline, secret: KEY, provider: c, clock });
+  await assert.rejects(r.init(), /answers for chain 5042002, not Arc \(5042\)/);
+  assert.equal(balanceReads, 0, "the chain is checked before the wallet balance is read");
+  assert.equal(c.sent.length, 0, "and nothing is ever signed or sent");
+});
+
 test("T23: a buy is approved once, dry-run, then sent as one V4_SWAP with the pool key, the exact input and the price floor", async () => {
   const c = chain();
   const r = await router(c, { slippagePct: 15 });

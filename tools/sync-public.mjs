@@ -37,6 +37,8 @@
 //                           published reads them; the sync verifies that)
 //   package.json            scripts that point at excluded files are dropped; the test glob loses
 //                           the excluded suites; the repository field names the public repo
+//   README.md               its pointer to the mirror inverts: in the mirror, this IS the mirror
+//   .gitignore              the ignore rules for launch/ are dropped with the directory itself
 //   deploy/Dockerfile       boots the production server (the dev server is not published)
 //   docs/AXIOMS.md          one operations note about credential rotation is dropped
 //
@@ -156,6 +158,22 @@ const TRANSFORMS = {
     }
     pkg.repository = { type: "git", url: PUBLIC_REPO };
     return JSON.stringify(pkg, null, 2) + "\n";
+  },
+  "README.md": (text) => {
+    // In the mirror the reader IS looking at the mirror, so the pointer inverts.
+    const before = "The public mirror is [Bondli_public](https://github.com/Bradbuythedip/Bondli_public); what it leaves\nout, and why, is in [docs/PUBLIC_MIRROR.md](docs/PUBLIC_MIRROR.md).";
+    must(text.includes(before), "README.md's mirror pointer changed");
+    return text.replace(before, "This is the public mirror of Bondli's working repository. What it leaves out, and why, is in\n[docs/PUBLIC_MIRROR.md](docs/PUBLIC_MIRROR.md).");
+  },
+  ".gitignore": (text) => {
+    // The ignore rules for launch/ name paths and a project codename that exist nowhere else in the
+    // mirror: a reader would be told about a directory they cannot see.
+    const lines = text.split("\n");
+    const a = findOnce(lines, l => l.startsWith("# Robinhood Chain fleet launcher"), ".gitignore fleet stanza");
+    must(lines.slice(a).every(l => !l.startsWith("#") || /fleet launcher|PONS miner/.test(l)), ".gitignore has new stanzas after the fleet ones; check what belongs in the mirror");
+    const out = lines.slice(0, a).join("\n").replace(/\n+$/, "\n");
+    must(!/launch\//.test(out), ".gitignore still names launch/ after the transform");
+    return out;
   },
   "deploy/Dockerfile": (text) => {
     must(text.includes('CMD ["node", "src/api/server.mjs"]'), "Dockerfile CMD changed");

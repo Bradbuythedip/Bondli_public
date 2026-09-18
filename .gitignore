@@ -41,14 +41,3 @@ data/velocity/
 risk.json
 risk.json.last-good
 velocity.config.json
-
-# Robinhood Chain fleet launcher: keys and run state, never committed
-launch/robinhood/.env
-launch/robinhood/fleet-state.json
-launch/robinhood/fleet-state.*.json
-launch/robinhood/runs/
-
-# PONS miner: cached explorer ABIs, the traced template and the mined salt (local working files)
-launch/notafruitfly/pons-abi/
-launch/notafruitfly/pons-state.json
-launch/notafruitfly/pons-template.json

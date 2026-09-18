@@ -2,7 +2,7 @@
 // A callout is the bot's OWN fill, never an opinion: the instrument, the venue, the buy transaction
 // anyone can look up, the market cap at the moment of posting, the tier, and the exit plan declared
 // up front. Before a word reaches a channel the record is written to the ledger with
-// sha256(venue|instrument|tx|ts), so the track record is anchored at post time and cannot be
+// sha256(venue|instrument|tx|ts|mcapUsd|tier|plan), so the track record is anchored at post time
 // trimmed or back-dated later. Every outcome is posted too, losses included: a channel that only
 // shows its winners is the thing this exists to not be.
 //

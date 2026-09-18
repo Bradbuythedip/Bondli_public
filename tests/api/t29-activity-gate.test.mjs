@@ -53,4 +53,17 @@ test("T29: every module-level poller, the PumpPortal socket, the on-chain stream
   assert.match(SRC, /app\.get\("\/api\/activity"/);
   assert.match(HUB, /this\.onUsers\?\.\(this\.users\.size\);/g);
   assert.equal((HUB.match(/this\.onUsers\?\.\(this\.users\.size\);/g) || []).length, 2, "reported on start and on stop");
+
+  // Intervals were gated; one-shot BOOT calls were not, and four of them reached the outside world
+  // the instant the process started -- five HTTPS requests for a SOL price nobody had asked for.
+  // A poller that fires once at module load is still the outside world being polled with no bot
+  // running, and the axiom does not have an exception for the first time.
+  for (const boot of ["pollSolPrice", "pollDexBoosted", "startMemeticWorkers"]) {
+    assert.doesNotMatch(SRC, new RegExp(`^${boot}\\(\\);$`, "m"), `${boot}() still runs at boot`);
+  }
+  assert.doesNotMatch(SRC, /^devWalletTracker\.start\(\);$/m, "the dev-wallet balance poller still starts at boot");
+  assert.match(SRC, /pollSolPrice\(\); pollDexBoosted\(\); \}/, "both price feeds poll when the gate opens");
+  assert.match(SRC, /activity\.on\(\(active\) => \{ if \(active\) devWalletTracker\.start\(\); else devWalletTracker\.stop\(\); \}\);/, "dev-wallet polling follows the gate both ways");
+  assert.match(SRC, /if \(active\) \{ if \(!memeticWorkers\) memeticWorkers = startMemeticWorkers\(\); return; \}/, "the memetic workers start on the gate");
+  assert.match(SRC, /for \(const t of memeticWorkers \|\| \[\]\) \{ try \{ clearInterval\(t\); \} catch \{\} \}/, "and their timers are cleared when it closes");
 });

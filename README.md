@@ -16,8 +16,8 @@ exits, the routers for three chains, the verified-callout ledger, and the tests 
 on this page. It is the repository referenced by our
 [Arc ecosystem grant submission](docs/GRANT-ARC.md).
 
-The public mirror is [Bondli_public](https://github.com/Bradbuythedip/Bondli_public); what it leaves
-out, and why, is in [docs/PUBLIC_MIRROR.md](docs/PUBLIC_MIRROR.md).
+This is the public mirror of Bondli's working repository. What it leaves out, and why, is in
+[docs/PUBLIC_MIRROR.md](docs/PUBLIC_MIRROR.md).
 
 ---
 
@@ -35,12 +35,16 @@ venues through the same gates:
 
 On Arc the quote asset is the dollar itself: the stake, the mark, the profit, the gas and the
 platform's fee are all USDC, with no price feed between the trade and the money. That integration is
-documented in [docs/ARC_INTEGRATION.md](docs/ARC_INTEGRATION.md) and published as a standalone
-package, [`@bondli/arc-argus`](packages/arc-argus) — the only Argus indexer and pool-math library we
-know of.
+documented in [docs/ARC_INTEGRATION.md](docs/ARC_INTEGRATION.md) and packaged to stand on its own as
+[`@bondli/arc-argus`](packages/arc-argus). We know of no other Argus indexer or pool-math library;
+this one is not on npm yet, so today it is installed from this repository.
 
 A fourth adapter, Polymarket, and a disabled perps stub live under `src/velocity/venues/` and are
 driven by the standalone CLI rather than the hosted service.
+
+BRAD, referenced by `src/engine/brad-*.mjs` and `docker-compose.brad.yml`, is an optional reasoning
+sidecar that lives in its own repository. It is not in this one and nothing here needs it: with no
+sidecar running the server logs `BRAD: offline` at boot and trades exactly as it otherwise would.
 
 ---
 
@@ -103,7 +107,7 @@ of them, offline, with no keys.
 | Losing more means betting less, with no lockout | `src/velocity/core/governor.mjs` | `tests/velocity/t7-governor.test.mjs` |
 | The learner cannot invert a sacred rule or drift past its bounds | `src/velocity/core/learner.mjs` | `tests/velocity/t8-learner.test.mjs` |
 | The fee is taken only from realized profit, in the venue's own asset | `src/velocity/hub.mjs` `settleFee` | `tests/velocity/t11-hub.test.mjs` |
-| Holding the house token waives the fee; an unreadable balance never charges a holder | `src/velocity/core/holder-waiver.mjs` | `tests/velocity/t14-holder-waiver.test.mjs` |
+| Holding the house token waives the fee, and an unreadable balance never starts charging a known holder | `src/velocity/core/holder-waiver.mjs` | `tests/velocity/t14-holder-waiver.test.mjs` |
 | A call is bound to the fill that made it, and is hashed before it is posted | `src/velocity/core/callouts.mjs` | `tests/velocity/t21-callouts.test.mjs` |
 | Argus events, topics and record layouts decode correctly | `packages/arc-argus/chain.mjs` | `tests/velocity/t20-arc-chain.test.mjs` |
 | A held token ticks every poll, readable or not | `src/velocity/venues/arc/feed.mjs`, `pons/feed.mjs` | `tests/velocity/t22-arc-feed.test.mjs`, `t27-feed-held-safety` |
@@ -143,7 +147,7 @@ A fuller tree is in [docs/REPO_STRUCTURE.md](docs/REPO_STRUCTURE.md).
 ```bash
 npm install && npm install --prefix app
 npm test
-npm run test:offline     # the same suite, with every call to the outside world made to throw
+npm run test:offline     # the same suite, with every fetch to the outside world made to throw
 ```
 
 The whole suite runs offline and green. No RPC, no API key and no funded wallet: every chain the

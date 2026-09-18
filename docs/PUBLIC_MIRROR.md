@@ -57,13 +57,15 @@ tests, the frontend and the deployment files are all published.
 
 ## What is changed on the way out
 
-Four transformations, each asserted by the sync script so that a change on the private side fails the
+Six transformations, each asserted by the sync script so that a change on the private side fails the
 sync rather than drifting silently:
 
 | File | Change |
 |---|---|
 | `src/engine/config.mjs` | the fleet's volume, auto-rug and wallet-role settings are dropped; nothing published reads them, and the script verifies that |
 | `package.json` | scripts that point at excluded files are removed, the test glob loses the excluded suites, and `repository` names the public repo |
+| `README.md` | its pointer to the mirror inverts — in the mirror, this is the mirror |
+| `.gitignore` | the ignore rules for `launch/` go with the directory, rather than describing paths a reader cannot see |
 | `deploy/Dockerfile` | boots the production server, since the legacy development server is not published |
 | `docs/AXIOMS.md` | one operational note about rotating our own credentials is dropped |
 

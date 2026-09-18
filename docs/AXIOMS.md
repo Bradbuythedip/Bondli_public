@@ -5,8 +5,10 @@ axiom names the rule, what breaks it, and where in the code it is held — so a 
 violate one has to argue with this file first.
 
 ## 1. Money leaves only by a trade they asked for or a fee they were told about.
-Nothing else. No route may move funds without the owner's signature (`requireOwner` on all 13 money
-routes, held by `tests/api/t15`). The fee is one rate, stated on the site, taken only from realized
+Nothing else. No route may move funds without the owner's signature. The count is deliberately not
+written down here — it goes stale the moment a route is added, and `tests/api/t15` enforces the
+property instead: it walks the server's own source and fails the build if any route that loads a
+trading wallet is missing `requireOwner`. The fee is one rate, stated on the site, taken only from realized
 profit, and zero for anyone holding `$BNDLI` (`hub.settleFee`, `t14`). A fee whose transfer fails is
 recorded as owed and collected later — never silently dropped (`hub.collectOwed`, `t11`). On
 Robinhood Chain the fee leaves in ETH and on Arc in USDC, each to the EVM fee wallet, never
@@ -58,7 +60,7 @@ Alerts go to `ALERT_WEBHOOK_URL`; the code is ready, the variable is the operato
 ## 9. A call is a fill, never an opinion.
 Anything the site or a channel says the bot "called" is a buy the bot made with real money: the
 token, the market cap it paid, the plan it declared, and the transaction. The record is written to
-its own ledger with `sha256(venue|instrument|tx|ts)` before any channel sees it, so it cannot be
+its own ledger with `sha256(venue|instrument|tx|ts|mcapUsd|tier|plan)` before any channel sees it, so it cannot be
 edited after the fact; the close is posted the same way, losses included. Paper never posts, below
 the tier never posts, one call per token per hour across every user, and no row names a wallet or a
 user (`Callouts`, `t21`, `t11`, `/api/callouts`).

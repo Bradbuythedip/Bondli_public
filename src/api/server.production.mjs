@@ -395,8 +395,8 @@ walletIntel.load().then(ok => console.log(`[WALLET-INTEL] ${ok ? "restored from 
 const devWalletTracker = new DevWalletTracker({ redis, connection });
 // Load persisted dev wallet data from Redis
 if (redis) { devWalletTracker.load().catch(() => {}); }
-// Start background balance polling
-devWalletTracker.start();
+// Background balance polling, on the gate: it reads balances over RPC, which is the outside world.
+activity.on((active) => { if (active) devWalletTracker.start(); else devWalletTracker.stop(); });
 // Alert on high-value dev launches
 devWalletTracker.onHighValueDev = (alert) => {
   broadcastWS({ event: "high_value_dev", data: alert });
@@ -670,7 +670,8 @@ async function pollSolPrice() {
   } catch {}
   console.warn(`[sol-price] every source failed; serving ${solUsdPrice} from ${solUsdPriceAt ? new Date(solUsdPriceAt).toISOString() : "the default"}`);
 }
-pollSolPrice();
+// No boot call: the activity gate polls the price when it opens (see activity.on below), so with
+// nobody trading this server asks Jupiter, CoinGecko, Binance and Coinbase for nothing at all.
 setInterval(gated(pollSolPrice), 60000); // 60s — SOL price doesn't move fast enough to justify 30s
 
 // ═══════════════════════════════════════
@@ -700,7 +701,7 @@ async function pollDexBoosted() {
     }
   } catch {}
 }
-pollDexBoosted();
+// Polled when the gate opens, not at boot. See activity.on below.
 setInterval(gated(pollDexBoosted), 120000); // every 2 min
 
 // ═══════════════════════════════════════
@@ -2848,7 +2849,7 @@ setInterval(gated(() => {
 
 // The socket follows the gate: up on the first bot, closed once nobody has traded for the grace.
 activity.on((active) => {
-  if (active) { if (!radar.ws || radar.ws.readyState > 1) connectPumpPortal(); setTimeout(chooseTradeSource, 2_000); pollSolPrice(); }
+  if (active) { if (!radar.ws || radar.ws.readyState > 1) connectPumpPortal(); setTimeout(chooseTradeSource, 2_000); pollSolPrice(); pollDexBoosted(); }
   else { try { radar.ws?.close(); } catch {} chooseTradeSource(); }
 });
 
@@ -3009,9 +3010,15 @@ setInterval(gated(() => refreshBagsMcap().catch(() => {})), 30_000);
 // Initial refresh after 5s (let bags ingest first)
 setTimeout(() => refreshBagsMcap().catch(() => {}), 5000);
 
-// Start memetic background workers (trend poller, KOL monitor, etc.)
+// The memetic background workers (trend, market, celebrity, mindshare and KOL pollers) all call
+// out. They follow the gate too, and their timer handles are cleared when it closes.
 loadMemeticBlacklists().catch(() => {});
-startMemeticWorkers();
+let memeticWorkers = null;
+activity.on((active) => {
+  if (active) { if (!memeticWorkers) memeticWorkers = startMemeticWorkers(); return; }
+  for (const t of memeticWorkers || []) { try { clearInterval(t); } catch {} }
+  memeticWorkers = null;
+});
 
 // ═══════════════════════════════════════
 // WEBSOCKET BROADCAST
