@@ -1,0 +1,41 @@
+# Docker Compose for running BRAD cognitive engine alongside Bondli
+#
+# Usage:
+#   docker-compose -f docker-compose.brad.yml up -d
+#
+# This starts the BRAD sidecar on port 8421.
+# Bondli's server.production.mjs auto-connects via BRAD_URL env var.
+#
+# Prerequisites:
+#   - Clone BRAD repo alongside bondli: git clone https://github.com/bradbuythedip/brad.git ../brad
+#   - Or set BRAD_REPO_PATH to the BRAD repo location
+
+version: "3.8"
+
+services:
+  brad-engine:
+    build:
+      context: ${BRAD_REPO_PATH:-../brad}
+      dockerfile: bondli_bridge/Dockerfile
+    ports:
+      - "8421:8421"
+    environment:
+      - BRAIN_HOST=0.0.0.0
+      - BRAIN_PORT=8421
+      # Risk limits (override defaults)
+      - BRAIN_MAX_POSITION_SOL=${BRAIN_MAX_POSITION_SOL:-1.0}
+      - BRAIN_MAX_POSITIONS=${BRAIN_MAX_POSITIONS:-5}
+      - BRAIN_MAX_EXPOSURE_SOL=${BRAIN_MAX_EXPOSURE_SOL:-5.0}
+      - BRAIN_MIN_SCORE_APE=${BRAIN_MIN_SCORE_APE:-0.65}
+      - BRAIN_RUG_SIGNAL_MAX=${BRAIN_RUG_SIGNAL_MAX:-2}
+      - BRAIN_MAX_DRAWDOWN=${BRAIN_MAX_DRAWDOWN:-0.15}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8421/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M

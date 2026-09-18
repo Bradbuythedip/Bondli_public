@@ -1,0 +1,65 @@
+{
+  "_description": "Categorized meme keyword lexicon from Mongardini & Mei (2025) analysis of 34,988 tokens. 150+ keywords across 7 categories.",
+  "animals": [
+    "dog", "doge", "shiba", "inu", "cat", "kitty", "kitten", "frog", "pepe",
+    "bird", "eagle", "hawk", "bear", "bull", "whale", "fish", "shark", "wolf",
+    "fox", "monkey", "ape", "gorilla", "panda", "dragon", "snake", "lion",
+    "tiger", "hamster", "rabbit", "bunny", "penguin", "owl", "duck", "goat",
+    "cow", "pig", "chicken", "bat", "rat", "mouse", "turtle", "crab",
+    "octopus", "squid", "bee", "ant", "butterfly", "unicorn", "phoenix",
+    "puppy", "corgi", "pug", "husky", "chihuahua", "golden", "floki"
+  ],
+  "crypto_culture": [
+    "hodl", "wagmi", "ngmi", "gm", "gn", "wen", "ser", "fren", "based",
+    "degen", "ape", "diamond", "hands", "paper", "moon", "pump", "dump",
+    "rug", "jeet", "chad", "gigachad", "alpha", "beta", "whale", "shrimp",
+    "bag", "gem", "shill", "fud", "fomo", "yolo", "rekt", "lambo",
+    "tendies", "copium", "hopium", "cope", "seethe", "mald", "anon",
+    "normie", "pleb", "maxi", "mint", "stake", "yield", "farm", "airdrop",
+    "snapshot", "valhalla", "dao", "nft"
+  ],
+  "internet_culture": [
+    "sigma", "rizz", "skibidi", "ohio", "gyatt", "sus", "cap", "nocap",
+    "bussin", "fire", "lit", "vibe", "slay", "goated", "mid", "ratio",
+    "bruh", "fr", "ngl", "ong", "lowkey", "highkey", "glaze", "mog",
+    "mew", "aura", "edging", "brain", "rot", "cooked", "delulu", "ate",
+    "snatched", "slaps", "hits", "different", "understood", "assignment",
+    "npc", "main", "character", "era", "ick", "bet", "dead", "crying",
+    "screaming", "sobbing", "sober", "unhinged", "feral", "chaotic"
+  ],
+  "absurdist": [
+    "fart", "poop", "chungus", "bonk", "boop", "honk", "sploot", "blorp",
+    "yeet", "yoink", "derp", "herp", "burp", "snort", "moist", "chunky",
+    "thicc", "smol", "lorge", "beeg", "chonk", "blep", "mlem", "bork",
+    "floof", "zoomies", "beans", "toes", "snoot", "heckin", "bamboozle",
+    "woof", "meow", "quack", "oink", "moo", "baa"
+  ],
+  "ai_tech": [
+    "ai", "gpt", "llm", "neural", "quantum", "cyber", "matrix", "algo",
+    "bot", "agent", "turbo", "hyper", "mega", "ultra", "super", "meta",
+    "virtual", "digital", "crypto", "chain", "block", "node", "hash",
+    "compute", "tensor", "model", "train", "inference", "synthetic",
+    "autonomous", "sentient", "singularity", "agi", "skynet"
+  ],
+  "political": [
+    "trump", "maga", "biden", "obama", "elon", "musk", "putin", "xi",
+    "freedom", "liberty", "patriot", "rebel", "revolution", "resist",
+    "based", "redpill", "bluepill", "blackpill", "woke", "anti",
+    "brandon", "dark", "hunter", "jpow", "fed", "printer", "brrr",
+    "stimulus", "inflation", "recession"
+  ],
+  "japanese": [
+    "inu", "neko", "kawaii", "desu", "senpai", "waifu", "otaku", "anime",
+    "manga", "chibi", "sake", "ramen", "sushi", "samurai", "ninja",
+    "sensei", "dojo", "karate", "baka", "sugoi", "nani", "ara",
+    "uwu", "owo", "chan", "kun", "san", "sama", "moshi"
+  ],
+  "combo_bonuses": {
+    "animal_crypto": 0.3,
+    "animal_absurdist": 0.25,
+    "internet_culture_crypto": 0.2,
+    "japanese_animal": 0.25,
+    "ai_absurdist": 0.15,
+    "political_absurdist": 0.2
+  }
+}

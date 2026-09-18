@@ -1,0 +1,91 @@
+{
+  "_description": "Curated KOL (Key Opinion Leader) list for influencer cascade tracking. 200+ accounts across tiers.",
+  "tiers": {
+    "tier1": {
+      "description": "Mega influencers 1M+ followers - market movers",
+      "accounts": [
+        {"handle": "elonmusk", "platform": "twitter", "followers": 180000000, "winRate": 0.45},
+        {"handle": "realDonaldTrump", "platform": "twitter", "followers": 90000000, "winRate": 0.40},
+        {"handle": "VitalikButerin", "platform": "twitter", "followers": 5500000, "winRate": 0.55},
+        {"handle": "caboranoch", "platform": "twitter", "followers": 3000000, "winRate": 0.38},
+        {"handle": "SBF_FTX", "platform": "twitter", "followers": 1200000, "winRate": 0.20}
+      ]
+    },
+    "tier2": {
+      "description": "Top CT (Crypto Twitter) 100K-1M followers",
+      "accounts": [
+        {"handle": "CryptoKaleo", "platform": "twitter", "followers": 600000, "winRate": 0.42},
+        {"handle": "HsakaTrades", "platform": "twitter", "followers": 550000, "winRate": 0.48},
+        {"handle": "GiganticRebirth", "platform": "twitter", "followers": 450000, "winRate": 0.35},
+        {"handle": "blknoiz06", "platform": "twitter", "followers": 400000, "winRate": 0.52},
+        {"handle": "DefiIgnas", "platform": "twitter", "followers": 380000, "winRate": 0.45},
+        {"handle": "inversebrah", "platform": "twitter", "followers": 350000, "winRate": 0.40},
+        {"handle": "0xMert_", "platform": "twitter", "followers": 330000, "winRate": 0.50},
+        {"handle": "ColdBloodShill", "platform": "twitter", "followers": 320000, "winRate": 0.38},
+        {"handle": "ZssBecker", "platform": "twitter", "followers": 300000, "winRate": 0.44},
+        {"handle": "CryptoGodJohn", "platform": "twitter", "followers": 280000, "winRate": 0.36},
+        {"handle": "AltcoinSherpa", "platform": "twitter", "followers": 260000, "winRate": 0.46},
+        {"handle": "MustStopMurad", "platform": "twitter", "followers": 250000, "winRate": 0.55},
+        {"handle": "CryptoWizardd", "platform": "twitter", "followers": 240000, "winRate": 0.42},
+        {"handle": "Pentosh1", "platform": "twitter", "followers": 220000, "winRate": 0.48},
+        {"handle": "Darrenlautf", "platform": "twitter", "followers": 200000, "winRate": 0.40},
+        {"handle": "TheDeFiEdge", "platform": "twitter", "followers": 190000, "winRate": 0.44},
+        {"handle": "thedefiedge", "platform": "twitter", "followers": 180000, "winRate": 0.42},
+        {"handle": "AndreCrowordje", "platform": "twitter", "followers": 170000, "winRate": 0.50},
+        {"handle": "coaboranoch", "platform": "twitter", "followers": 150000, "winRate": 0.35},
+        {"handle": "SolJakey", "platform": "twitter", "followers": 140000, "winRate": 0.52}
+      ]
+    },
+    "tier3": {
+      "description": "Mid-tier CT 20K-100K followers",
+      "accounts": [
+        {"handle": "SOLBigBrain", "platform": "twitter", "followers": 95000, "winRate": 0.50},
+        {"handle": "CryptoTony__", "platform": "twitter", "followers": 88000, "winRate": 0.45},
+        {"handle": "SolanaFloor", "platform": "twitter", "followers": 82000, "winRate": 0.42},
+        {"handle": "DegenSpartan", "platform": "twitter", "followers": 78000, "winRate": 0.48},
+        {"handle": "Crypto_Birb", "platform": "twitter", "followers": 72000, "winRate": 0.44},
+        {"handle": "JackNiewold", "platform": "twitter", "followers": 68000, "winRate": 0.46},
+        {"handle": "PumpToolsBot", "platform": "twitter", "followers": 62000, "winRate": 0.40},
+        {"handle": "memecoinGG", "platform": "twitter", "followers": 55000, "winRate": 0.38},
+        {"handle": "SolanaLegend", "platform": "twitter", "followers": 48000, "winRate": 0.50},
+        {"handle": "CryptoNova_", "platform": "twitter", "followers": 42000, "winRate": 0.44},
+        {"handle": "DeFi_Made_Here", "platform": "twitter", "followers": 38000, "winRate": 0.46},
+        {"handle": "theblockworker", "platform": "twitter", "followers": 35000, "winRate": 0.42},
+        {"handle": "SolportTom", "platform": "twitter", "followers": 32000, "winRate": 0.48},
+        {"handle": "PumpDotScience", "platform": "twitter", "followers": 28000, "winRate": 0.40},
+        {"handle": "MemeCoinAlerts", "platform": "twitter", "followers": 25000, "winRate": 0.36}
+      ]
+    },
+    "tier4": {
+      "description": "Micro influencers 5K-20K followers - early discoverers",
+      "accounts": [
+        {"handle": "AlphaSeeker_", "platform": "twitter", "followers": 18000, "winRate": 0.52},
+        {"handle": "GemFinderSOL", "platform": "twitter", "followers": 15000, "winRate": 0.48},
+        {"handle": "PumpFunAlpha", "platform": "twitter", "followers": 12000, "winRate": 0.50},
+        {"handle": "SolanaAlpha_", "platform": "twitter", "followers": 10000, "winRate": 0.46},
+        {"handle": "DegenAlerts", "platform": "twitter", "followers": 8500, "winRate": 0.44},
+        {"handle": "MemeSniperSOL", "platform": "twitter", "followers": 7200, "winRate": 0.42},
+        {"handle": "PumpRadar", "platform": "twitter", "followers": 6800, "winRate": 0.40},
+        {"handle": "SolGemCalls", "platform": "twitter", "followers": 6000, "winRate": 0.48},
+        {"handle": "AlphaPulse_", "platform": "twitter", "followers": 5500, "winRate": 0.38},
+        {"handle": "MicroCapGems", "platform": "twitter", "followers": 5200, "winRate": 0.44}
+      ]
+    }
+  },
+  "knownWallets": {
+    "_description": "Known KOL wallets for pre-accumulation detection. Map handle -> [wallet addresses]",
+    "placeholder": ["WALLET_ADDRESS_HERE"]
+  },
+  "tierThresholds": {
+    "tier1": 1000000,
+    "tier2": 100000,
+    "tier3": 20000,
+    "tier4": 5000
+  },
+  "cascadeStageDefinitions": {
+    "discovery": "Only tier4 (micro) mentions",
+    "amplification": "tier3-4 mentions, no tier1-2",
+    "fomo": "tier2+ entering",
+    "exhaustion": "All tiers saturated"
+  }
+}

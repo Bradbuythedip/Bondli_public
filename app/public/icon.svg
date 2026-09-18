@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#09090d"/>
+  <defs>
+    <linearGradient id="p1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff5555"/>
+      <stop offset="50%" stop-color="#dd1818"/>
+      <stop offset="100%" stop-color="#881010"/>
+    </linearGradient>
+    <linearGradient id="p2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff4040"/>
+      <stop offset="100%" stop-color="#771010"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(20,6) scale(0.75)">
+    <path d="M15,2 Q23,2 26,8 L27,20 L27,22 L26,34 Q23,40 15,40 L15,2 Z" fill="url(#p1)"/>
+    <path d="M15,2 Q7,2 4,8 L3,20 L3,22 L4,34 Q7,40 15,40 L15,2 Z" fill="url(#p2)"/>
+    <path d="M10,4 Q7,6 6,12 L8,10 Q10,5 14,4 Z" fill="#ff999933"/>
+    <!-- Ghost B watermark -->
+    <text x="15" y="23" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="18" fill="#ffffff" opacity="0.06">B</text>
+  </g>
+  <!-- 3 white lines under the pill -->
+  <line x1="22" y1="42" x2="42" y2="42" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <line x1="25" y1="47" x2="39" y2="47" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <line x1="28" y1="52" x2="36" y2="52" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+</svg>

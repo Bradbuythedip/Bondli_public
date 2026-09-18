@@ -1,0 +1,99 @@
+{
+  "_comment": "VELOCITY risk envelope. Read once at start. The process cannot write this file. All amounts in USD. Copy to risk.json and edit.",
+  "base_currency": "USD",
+  "bankroll_usd": 2000,
+  "bankroll_source": "fixed",
+  "wallet_reserve_sol": 0.02,
+  "per_trade_max_usd": 50,
+  "portfolio_max_exposure_usd": 400,
+  "daily_loss_limit_usd": 100,
+  "max_concurrent_positions": 6,
+  "max_per_group": 2,
+  "venues": {
+    "pumpfun": {
+      "max_exposure_usd": 200,
+      "max_concurrent": 4,
+      "kelly_fraction": 0.25,
+      "min_stake_usd": 5,
+      "worst_case_fraction": 1.0,
+      "max_slippage_bps": 300,
+      "latency_budget_ms": {
+        "observe": 500,
+        "decide": 30,
+        "send": 150,
+        "confirm": 1500
+      }
+    },
+    "pons": {
+      "max_exposure_usd": 0,
+      "max_concurrent": 0,
+      "kelly_fraction": 0.25,
+      "min_stake_usd": 5,
+      "worst_case_fraction": 1.0,
+      "max_slippage_bps": 300,
+      "latency_budget_ms": {
+        "observe": 2500,
+        "decide": 30,
+        "send": 300,
+        "confirm": 25000
+      }
+    },
+    "polymarket": {
+      "max_exposure_usd": 300,
+      "max_concurrent": 4,
+      "kelly_fraction": 0.5,
+      "min_stake_usd": 10,
+      "worst_case_fraction": 1.0,
+      "max_slippage_bps": 50,
+      "latency_budget_ms": {
+        "observe": 250,
+        "decide": 20,
+        "send": 200,
+        "confirm": 5000
+      }
+    },
+    "perps": {
+      "max_exposure_usd": 0,
+      "max_concurrent": 0,
+      "kelly_fraction": 0.25,
+      "min_stake_usd": 10,
+      "worst_case_fraction": 1.0,
+      "max_slippage_bps": 20,
+      "latency_budget_ms": {
+        "observe": 200,
+        "decide": 20,
+        "send": 100,
+        "confirm": 2000
+      }
+    },
+    "arc": {
+      "max_exposure_usd": 0,
+      "max_concurrent": 0,
+      "kelly_fraction": 0.25,
+      "min_stake_usd": 5,
+      "worst_case_fraction": 1.0,
+      "max_slippage_bps": 300,
+      "latency_budget_ms": {
+        "observe": 2500,
+        "decide": 30,
+        "send": 300,
+        "confirm": 25000
+      }
+    }
+  },
+  "promotion": {
+    "min_paper_trades": {
+      "pumpfun": 200,
+      "polymarket": 50,
+      "perps": 100,
+      "pons": 200,
+      "arc": 200
+    },
+    "confidence": 0.9,
+    "live_start_fraction": 0.1
+  },
+  "wallet_reserve_quote": {
+    "pons": 0.001,
+    "arc": 2
+  }
+}

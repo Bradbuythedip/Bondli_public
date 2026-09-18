@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bondli.fun/sitemap.xml

@@ -1,0 +1,54 @@
+node_modules/
+dist/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Build artifacts
+.cache/
+.parcel-cache/
+
+# Runtime
+*.pid
+
+# velocity runtime files
+data/velocity/
+risk.json
+risk.json.last-good
+velocity.config.json
+
+# Robinhood Chain fleet launcher: keys and run state, never committed
+launch/robinhood/.env
+launch/robinhood/fleet-state.json
+launch/robinhood/fleet-state.*.json
+launch/robinhood/runs/
+
+# PONS miner: cached explorer ABIs, the traced template and the mined salt (local working files)
+launch/notafruitfly/pons-abi/
+launch/notafruitfly/pons-state.json
+launch/notafruitfly/pons-template.json

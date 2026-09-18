@@ -1,0 +1,34 @@
+name: tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      # The suite is offline: every chain it touches is a fake built inside the test file, so no
+      # RPC, key or funded wallet is needed. The frontend's dependencies are installed because one
+      # API test imports the app's theme module.
+      - name: Install
+        run: |
+          npm ci --ignore-scripts
+          npm ci --ignore-scripts --prefix app
+
+      - name: Test
+        run: npm test
+
+      - name: Check the Arc package parses standalone
+        run: node --check packages/arc-argus/chain.mjs && node --check packages/arc-argus/index.mjs

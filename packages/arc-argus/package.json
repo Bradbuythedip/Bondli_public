@@ -1,0 +1,13 @@
+{
+  "name": "@bondli/arc-argus",
+  "version": "0.1.0",
+  "description": "Argus on Arc, as data: Portal events and launch records, Uniswap v4 pool math, the hook's tax model, and the swap encodings a trading client needs. Pure functions over ethers; no network in the module.",
+  "type": "module",
+  "main": "index.mjs",
+  "exports": { ".": "./index.mjs", "./chain": "./chain.mjs" },
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/Bradbuythedip/Bondli_public", "directory": "packages/arc-argus" },
+  "keywords": ["arc", "argus", "uniswap-v4", "usdc", "launchpad", "indexer"],
+  "peerDependencies": { "ethers": "^6" },
+  "scripts": { "test": "cd ../.. && node --test tests/velocity/t20-arc-chain.test.mjs" }
+}

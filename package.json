@@ -1,0 +1,47 @@
+{
+  "name": "bondli",
+  "version": "3.0.0",
+  "description": "Bondli.fun - Game Theory PumpFun Engine (Production)",
+  "type": "module",
+  "scripts": {
+    "setup": "cp -n .env.production.template .env.production 2>/dev/null; npm install && cd app && npm install",
+    "dev": "concurrently \"npm run api:dev\" \"npm run ui\"",
+    "api:dev": "node src/api/server.production.mjs",
+    "api:prod": "NODE_ENV=production node src/api/server.production.mjs",
+    "ui": "cd app && npm run dev",
+    "build": "cd app && npm run build",
+    "start": "NODE_ENV=production node src/api/server.production.mjs",
+    "scan": "node src/engine/rug-scanner.mjs",
+    "deploy:fresh": "./deploy/deploy.sh fresh",
+    "deploy:update": "./deploy/deploy.sh update",
+    "deploy:status": "./deploy/deploy.sh status",
+    "deploy:logs": "./deploy/deploy.sh logs",
+    "generate:secrets": "node -e \"const c=require('crypto');console.log('JWT_SECRET='+c.randomBytes(32).toString('hex'));console.log('API_SECRET='+c.randomBytes(32).toString('hex'));console.log('FEE_SALT='+c.randomBytes(8).toString('hex'));console.log('REDIS_PASSWORD='+c.randomBytes(24).toString('hex'))\"",
+    "velocity": "node src/velocity/index.mjs",
+    "test": "node --test --test-timeout=180000 tests/velocity/*.test.mjs tests/radar/*.test.mjs tests/api/*.test.mjs"
+  },
+  "dependencies": {
+    "@pump-fun/pump-sdk": "^1.29.0",
+    "@solana/spl-token": "^0.4.0",
+    "@solana/web3.js": "^1.91.0",
+    "alchemy-sdk": "^3.4.0",
+    "bignumber.js": "^9.1.0",
+    "bn.js": "^5.2.3",
+    "bs58": "^5.0.0",
+    "concurrently": "^8.2.0",
+    "dotenv": "^16.4.0",
+    "ethers": "^6.17.0",
+    "express": "^4.18.0",
+    "node-fetch": "^3.3.0",
+    "redis": "^4.6.0",
+    "sharp": "^0.33.0",
+    "ws": "^8.16.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bradbuythedip/Bondli_public"
+  }
+}
