@@ -4,7 +4,7 @@
   "description": "Bondli.fun - Game Theory PumpFun Engine (Production)",
   "type": "module",
   "scripts": {
-    "setup": "cp -n .env.production.template .env.production 2>/dev/null; npm install && cd app && npm install",
+    "setup": "cp -n .env.example .env 2>/dev/null; npm install && npm install --prefix app",
     "dev": "concurrently \"npm run api:dev\" \"npm run ui\"",
     "api:dev": "node src/api/server.production.mjs",
     "api:prod": "NODE_ENV=production node src/api/server.production.mjs",
@@ -18,6 +18,7 @@
     "deploy:logs": "./deploy/deploy.sh logs",
     "generate:secrets": "node -e \"const c=require('crypto');console.log('JWT_SECRET='+c.randomBytes(32).toString('hex'));console.log('API_SECRET='+c.randomBytes(32).toString('hex'));console.log('FEE_SALT='+c.randomBytes(8).toString('hex'));console.log('REDIS_PASSWORD='+c.randomBytes(24).toString('hex'))\"",
     "velocity": "node src/velocity/index.mjs",
+    "pretest": "node tools/ensure-app-deps.mjs",
     "test": "node --test --test-timeout=180000 tests/velocity/*.test.mjs tests/radar/*.test.mjs tests/api/*.test.mjs",
     "test:offline": "node --import ./tests/helpers/offline-guard.mjs --test --test-timeout=180000 tests/velocity/*.test.mjs tests/radar/*.test.mjs tests/api/*.test.mjs"
   },

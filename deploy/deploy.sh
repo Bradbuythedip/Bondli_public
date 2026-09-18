@@ -50,7 +50,7 @@ fresh_install() {
 
   # 5. Check env
   if [ ! -f "$PROJECT_DIR/.env.production" ]; then
-    err ".env.production not found! Copy .env.production.template and fill in your secrets."
+    err ".env.production not found! Copy .env.example and fill in your secrets."
   fi
 
   # 6. Build frontend
