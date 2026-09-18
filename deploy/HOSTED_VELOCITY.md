@@ -1,6 +1,7 @@
 # Hosted Velocity on bondli.fun — deploy checklist
 
-Design: `src/velocity/HOSTED_DESIGN.md`. Backend on Railway, frontend on Vercel, as in SHIP_IT.md.
+Design: `src/velocity/HOSTED_DESIGN.md`. Backend on Railway, frontend on Vercel. Setup and the full
+environment are in `docs/QUICKSTART.md`.
 
 ## 1. Secrets (generate locally, paste into Railway → Variables)
 
@@ -12,7 +13,7 @@ node -e "const c=require('crypto');console.log('WALLET_ENCRYPTION_KEY='+c.random
 |---|---|---|
 | `WALLET_ENCRYPTION_KEY` | 64 hex chars from above | seals every trading-wallet key in Redis; without it production refuses to create wallets |
 | `JWT_SECRET` | 64 hex chars from above | signs the 7-day sign-in tokens; changing it signs everyone out |
-| `PLATFORM_WALLET` | a **fresh** wallet's public key | where performance fees go; the code refuses the old default (its key was exposed) |
+| `PLATFORM_WALLET` | a **fresh** wallet's public key | where performance fees go. The shipped default is accepted with a loud warning at every boot rather than refused — so a misconfiguration never silently stops your fees — but it must be replaced |
 | `VELOCITY_HOSTED` | `1` | mounts `/api/velocity/*` and starts the shared radar feed |
 | `VELOCITY_DATA_DIR` | `/app/data/velocity/users` | per-user ledgers and state; must be on the volume below |
 | `RPC_URL` | your Alchemy/Helius mainnet URL | signing, balances, confirmations |

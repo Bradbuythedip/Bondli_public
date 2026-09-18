@@ -29,5 +29,7 @@ test("T30: Arc launches are aggregated in public with no wallet, and Arc swaps f
   const AX = fs.readFileSync(path.resolve("docs/AXIOMS.md"), "utf8");
   assert.match(AX, /## 11\. On Arc the quote asset is the dollar/);
   const GRANT = fs.readFileSync(path.resolve("docs/GRANT-ARC.md"), "utf8");
-  assert.doesNotMatch(GRANT, /guaranteed return|BNDLI|\$JEFF/); assert.match(GRANT, /\{\{AMOUNT\}\}/, "numbers are placeholders until the record fills them");
+  // No promised return and no token in the submission. The placeholders are deliberately NOT asserted:
+  // a test that fails when the amount is filled in holds the document in its draft state forever.
+  assert.doesNotMatch(GRANT, /guaranteed return|BNDLI|\$JEFF/);
 });

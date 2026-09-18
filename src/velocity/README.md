@@ -1,12 +1,15 @@
 # Velocity Trader
 
-Autonomous multi-venue trading core built on bondli (scorer, gates, exits,
-execution) and the BRAD bridge (blind-spot governor). Design, requirements,
-design matrix and interaction spec: `BRAD/prompts/VELOCITY_TRADER_ONESHOT.md`.
+Autonomous multi-venue trading core built on bondli's scorer, gates and exits.
+The axiomatic design pass behind the hosted service is `HOSTED_DESIGN.md`; what
+the whole system owes its users is `../../docs/AXIOMS.md`.
 
-Two venues in the first release: pump.fun (the fast side, through bondli's
-radar) and Polymarket (the accurate side: resolved facts and negative-risk
-consistency). Perps and equities are disabled adapter stubs.
+Three venues trade for hosted users, all judged by the same gates, sized by the
+same sizer and closed by the same exit plans: **pump.fun** on Solana (through
+bondli's radar), **PONS** on Robinhood Chain, and **Argus** on Arc, where the
+quote asset is USDC and therefore the dollar (`../../docs/ARC_INTEGRATION.md`).
+**Polymarket** is a fourth adapter driven by the CLI below rather than by the
+hosted service; perps and equities are disabled stubs.
 
 Excluded by constraint: bondli's fleet wallets, wash volume and anti-detection
 modules. Nothing here manufactures volume or poses as retail.
@@ -52,9 +55,11 @@ src/velocity/
     build.mjs              engine from velocity.config.json
   venues/
     pumpfun/    feed (bondli /api/radar/scored), edge (bondli gates), router (curve model, live via smartSend)
+    pons/       feed + chain (Robinhood Chain logs, PONS V2 curves), router (ethers wallet, ETH quote)
+    arc/        feed + chain (Argus Portals, Uniswap v4), router (UniversalRouter via Permit2, USDC quote)
     polymarket/ feed (Gamma + CLOB WS + fact sources), edge (resolved_fact, consistency), router (book walk, live via clob-client)
     perps/      stub, disabled
-tests/velocity/  T1..T9 (node --test)
+tests/velocity/  T1..T27 (node --test), plus tests/api and tests/radar
 ```
 
 ## Runtime files (data/velocity)

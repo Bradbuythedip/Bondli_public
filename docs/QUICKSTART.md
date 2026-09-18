@@ -47,7 +47,7 @@ Full commentary lives in [`.env.example`](../.env.example); this is the map.
 |---|---|
 | `WALLET_ENCRYPTION_KEY` | 64 hex characters. Seals every custodial key at rest. Production refuses to create wallets without it |
 | `JWT_SECRET` | 64 hex characters. Signs the wallet sign-in tokens; changing it signs everyone out |
-| `PLATFORM_WALLET` | where SOL performance fees go. Must be a fresh wallet — the old default is refused by the code |
+| `PLATFORM_WALLET` | where SOL performance fees go. **Create a fresh wallet for it.** The address this project shipped with is accepted rather than refused, so an operator is never silently cut off from their own fees, but it warns at every boot and its key is not one to trust |
 | `PLATFORM_EVM_WALLET` | where ETH (Robinhood Chain) and USDC (Arc) fees go |
 | `MASTER_SEED` | the operator wallet that funds sub-wallets |
 

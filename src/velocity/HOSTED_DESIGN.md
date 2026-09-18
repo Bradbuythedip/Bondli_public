@@ -5,6 +5,10 @@ matrix, what had to be decoupled, and the phases.
 
 ## Givens
 
+*Written before the work below was done, and kept as written. The two defects named here are
+closed in this repository: DP1 put `requireOwner` on every route that reads a key, and DP4 seals
+every custodial secret with AES-256-GCM. `tests/api/t15` and `t16` hold both.*
+
 - bondli.fun exists: React app on Vercel, Express API on Railway with Redis, per-user *trading
   wallets* whose keys the server generates and holds (custodial), an auto-ape UI already wired to
   `/api/auto-trade/*`, a fee engine (`src/engine/fee-engine.mjs`) carrying an older free/pro/vip
@@ -61,8 +65,9 @@ those two numbers at close. The fee never reads the USD figures, which depend on
 
 The fee rule with the fewest ways to be wrong: fee on realized SOL profit of one closed position,
 computed from on-chain measured amounts, paid once, from the same wallet that earned it, to one
-configured address, refused when that address is the default (the default is a wallet whose key has
-been exposed). Everything else in the fee engine (ladders, streaks, referral splits) is applied
+configured address, and never when no address is configured. (The address this project shipped with
+is accepted rather than refused, so a misconfiguration cannot silently stop an operator's fees, but
+it warns at every boot and must be replaced.) Everything else in the fee engine (ladders, streaks, referral splits) is applied
 through `calculateFee` unchanged so the site's existing economics carry over.
 
 ## Decisions taken as given (change one env var to change them)

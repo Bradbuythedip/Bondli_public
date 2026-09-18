@@ -31,7 +31,9 @@ were paid (`hub.settleFee`).
 
 ## 4. A loss is bounded before it happens, not explained after.
 The stop loss fires on the position's own mark on every tick. A sell never accepts a price below 85%
-of the curve's own quote — size shrinks before price widens, and `minOut` is never zero (`t13`). The
+of the curve's own quote on the EVM venues — size shrinks before price widens, and `minOut` is
+never zero (`t13`, `t23`). On pump.fun the same floor is the router's slippage setting, which
+defaults to 15%. The
 EV gate prices costs at the smallest stake the sizer could return, so a trade that cannot clear its
 own drag is refused (`pipeline.mjs`). Losing more always means betting less, smoothly, with no
 lockout to game (`governor` daily taper, `t7`); the only hard stop is a fault, at 3x the limit.

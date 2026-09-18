@@ -3256,7 +3256,7 @@ function requireAdmin(req, res, next) {
 // ROUTES: SOL PRICE
 // ═══════════════════════════════════════
 app.get("/api/sol-price", (req, res) => {
-  res.json({ price: solUsdPrice, updated: Date.now() });
+  res.json({ price: solUsdPrice, updated: solUsdPriceAt || null });
 });
 
 // ═══════════════════════════════════════

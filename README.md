@@ -128,7 +128,7 @@ src/velocity/        the trading engine: feed, gates, sizing, plans, exits, ledg
   core/              governor, learner, supervisor, callouts
   venues/            pumpfun · pons · arc · polymarket · perps (stub)
   hub.mjs            one engine per user, the performance fee, the wallet paths
-packages/arc-argus/  the Arc/Argus chain layer, published on its own
+packages/arc-argus/  the Arc/Argus chain layer, installed from this repository
 src/api/             the HTTP server, the radar, the activity gate
 src/engine/          scoring, rug detection, wallet intelligence, price feeds
 src/autoape/         the entry gates and the exit-plan table

@@ -1,7 +1,8 @@
 {
   "name": "bondli",
   "version": "3.0.0",
-  "description": "Bondli.fun - Game Theory PumpFun Engine (Production)",
+  "description": "Bondli — a bot that trades launchpad tokens in their first minutes, on pump.fun, Robinhood Chain and Arc",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "setup": "cp -n .env.example .env 2>/dev/null; npm install && npm install --prefix app",

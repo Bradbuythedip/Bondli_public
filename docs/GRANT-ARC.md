@@ -13,7 +13,7 @@ it makes can be published as a callout that was hashed into a ledger before anyo
 included. It runs on pump.fun, on Robinhood Chain, and now on Arc through Argus, where it is the
 first trading system whose quote asset is the dollar itself: sizing, marks, P&L and the platform's
 fee are all USDC, with no price feed between the trade and the money. The Arc integration is open
-source as a standalone package, `@bondli/arc-argus`, the only published Argus indexer and pool-math
+source as a standalone package, `@bondli/arc-argus`, the only Argus indexer and pool-math
 library we know of; the package, the Arc venue that uses it and the tests that hold every claim below
 are public at https://github.com/Bradbuythedip/Bondli_public. We are asking for `{{AMOUNT}}` against
 three public deliverables in 90 days.
@@ -25,7 +25,7 @@ three public deliverables in 90 days.
   that never offers a launch inside the 3-second snipe tax [`t22`]. A live router that pays USDC
   through Permit2 and the UniversalRouter, dry-runs every swap before sending, refuses a buy inside
   the snipe window, never offers a zero price floor, shrinks a sell before widening its price, and
-  refuses an RPC that answers for another chain before it reads a balance [`t23`, 17 tests].
+  refuses an RPC that answers for another chain before it reads a balance [`t23`, 18 tests].
 - **USDC-native accounting.** `solPrice` on the Arc venue is the constant 1; the fee on a profitable
   close leaves as native USDC to an EVM fee wallet, never converted [`t11`]. Axiom 11 in
   `docs/AXIOMS.md` states the rule.
@@ -63,8 +63,8 @@ Payment against artifacts: a link that anyone can open, a test that anyone can r
 
 - It is USDC-native in the exact sense Arc is built for: no stablecoin bridge, no volatile gas, no
   price oracle between a user and their money.
-- It brings measurable activity: `{{ARC_TXS}}` transactions in the live record so far, every one
-  linked from a public page.
+- It will bring measurable activity, every transaction linked from a public page: the live Arc
+  record starts with deliverable 1, and the callout ledger it lands in is already public.
 - It leaves public goods behind: the indexer library, the dashboard, the smart-money aggregate, and
   a documented account of what is and is not pinned to published Argus sources.
 - It is safe to be associated with: a bot that refuses more than it accepts, that never promises a

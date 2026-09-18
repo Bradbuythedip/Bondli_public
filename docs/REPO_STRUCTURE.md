@@ -27,7 +27,7 @@ The tree, annotated. Generated against the published file list; the counts are r
 │   └── TWEETS.md                 launch thread drafts, with every number left as a placeholder
 │
 ├── packages/
-│   └── arc-argus/                (4)  the Arc/Argus chain layer, published standalone
+│   └── arc-argus/                (4)  the Arc/Argus chain layer, installed from this repository
 │       ├── chain.mjs             Portals, events, launch-record layouts, v4 pool math, tax model,
 │       │                         swap encodings — pure functions, no network
 │       ├── index.mjs             the public surface
@@ -123,12 +123,13 @@ The tree, annotated. Generated against the published file list; the counts are r
 │   │                             wallet intelligence
 │   └── helpers/                  (1)   the offline guard: proves the suite calls nothing outside
 │
-├── tools/                        (5)
+├── tools/                        (6)
 │   ├── tx-audit.mjs              reconcile the ledger against the chain, one signature at a time
 │   ├── gate-stats.mjs            offline calibration of the entry gates
 │   ├── mayhem-probe.mjs          what a token looks like from each source the radar can read
 │   ├── launch-push.mjs           push the launch banner
-│   └── sync-public.mjs           build the public mirror (see PUBLIC_MIRROR.md)
+│   ├── sync-public.mjs           build the public mirror (see PUBLIC_MIRROR.md)
+│   └── ensure-app-deps.mjs       so `npm ci && npm test` works on a fresh clone
 │
 └── deploy/                       (5)  Dockerfile, compose, nginx, deploy.sh, HOSTED_VELOCITY.md
 ```

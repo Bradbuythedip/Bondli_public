@@ -40,12 +40,16 @@ $BNDLI in the wallet you sign in with and the fee is 0%.
 2. Never hold what you cannot manage: no readable price for 45 seconds, sold on that fact alone.
 3. Every number on the screen reconciles with its own parts.
 4. A loss is bounded before it happens: the stop rides the position's own price on every tick, a sell
-   never takes less than 85% of the curve's quote, and losing more today means betting less.
+   is never given away at any price, and losing more today means betting less.
 5. You can stop everything, always, in one action. Pause freezes entries, never exits.
 6. Try it before you fund it.
 7. You can see why, in the bot's own words, reason included.
 8. Nothing is lost to our own failure: a crash reconciles from the ledger and the chain first.
 9. A call is a fill, never an opinion.
+10. A new chain has to earn its way in on trades before it can cost you money: on anything new the
+    bot refuses more than it accepts, and every order is rehearsed against the chain before it is sent.
+11. On Arc everything is dollars. What you stake, what it is worth, what you made and what we take
+    are the same unit, and there is no exchange rate in between to go stale or go missing.
 
 ## The bot did it, not me
 

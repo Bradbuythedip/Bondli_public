@@ -6,7 +6,7 @@ Everything is JSON. There are three kinds of route, and the difference matters:
 
 | Kind | Guard | Who may call it |
 |---|---|---|
-| **Public** | none | anyone; no wallet appears in any response |
+| **Public** | none | anyone. No *user* wallet appears in any response: the callout record, the pulse and the Arc stats name no trader and no bot. The radar routes do carry a token's own creator address, which is public on-chain data and part of judging a launch |
 | **Owner** | `requireOwner` | only the wallet that signed in, and only for its own wallet |
 | **Admin** | `requireAdmin` | only a caller holding `ADMIN_SECRET` |
 
@@ -37,7 +37,7 @@ in, just not as that person.
 
 ## Public data
 
-No authentication, no wallet in any response, safe to poll.
+No authentication, no user named in any response, safe to poll.
 
 | Route | What it returns |
 |---|---|
